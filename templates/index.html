@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JobPilot — ассистент поиска работы</title>
+{% include '_icons.html' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=Source+Serif+4:ital,wght@0,600;1,500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@500;700&family=Archivo:wght@600;900&family=Titillium+Web:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/resume-templates.css') }}">
+</head>
+<body>
+
+<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Открыть меню" aria-controls="app-sidebar" aria-expanded="false">
+  <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+</button>
+<div class="nav-scrim" id="nav-scrim" hidden></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="app-sidebar">
+    <div class="brand"><span class="brand-mark">JP</span> JobPilot</div>
+    <nav class="main-nav">
+      <button class="nav-item active" data-tab="search">
+        <span class="nav-ch">01</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Поиск вакансий
+      </button>
+      <button class="nav-item" data-tab="market">
+        <span class="nav-ch">02</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V5"/><path d="M10 19V9"/><path d="M16 19V3"/><path d="M22 19V11"/></svg>
+        Рынок кандидатов
+      </button>
+      <button class="nav-item" data-tab="cvs">
+        <span class="nav-ch">03</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Резюме
+      </button>
+      <button class="nav-item" data-tab="hr">
+        <span class="nav-ch">04</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.5 21c0-3.6-2.9-6.5-6.5-6.5h-2c-3.6 0-6.5 2.9-6.5 6.5"/><circle cx="13.5" cy="7.5" r="4"/><path d="M5 8.5l1.5 1.5L9 7"/></svg>
+        Виртуальный HR
+      </button>
+      <button class="nav-item" data-tab="settings">
+        <span class="nav-ch">05</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Настройки
+      </button>
+      {% if user.role == 'admin' %}
+      <a class="nav-item" href="/admin">
+        <span class="nav-ch">AD</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18.4 8.6 12 15l-3-3-4 4"/></svg>
+        Админка
+      </a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-instruments">
+      <div class="instr-label">Источники</div>
+      <div class="instr-row"><span class="instr-led djinni"></span>djinni.co</div>
+      <div class="instr-row"><span class="instr-led workua"></span>work.ua</div>
+      <div class="instr-row"><span class="instr-led rabotaua"></span>robota.ua</div>
+      <div class="instr-row"><span class="instr-led jooble"></span>jooble.org<span class="instr-note">свой ключ</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">{{ user.name }}</div>
+        <div class="sidebar-user-email">{{ user.email }}</div>
+      </div>
+      <form method="POST" action="/logout">
+        <button type="submit" class="icon-btn-ghost" title="Выйти" aria-label="Выйти">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <div class="cockpit-topbar">
+      <div class="topbar-item"><span class="topbar-label">Пилот</span><span class="topbar-value">{{ user.name }}</span></div>
+      <div class="topbar-item"><span class="topbar-label">Дата</span><span class="topbar-value" id="cockpit-date">--</span></div>
+      <div class="topbar-item"><span class="topbar-label">Время</span><span class="topbar-value" id="cockpit-clock">--:--:--</span></div>
+    </div>
+    <script>
+      (function tickCockpit() {
+        var now = new Date();
+        var clock = document.getElementById('cockpit-clock');
+        var date = document.getElementById('cockpit-date');
+        if (clock) clock.textContent = now.toLocaleTimeString('ru-RU', { hour12: false });
+        if (date) date.textContent = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        setTimeout(tickCockpit, 1000);
+      })();
+    </script>
+
+    <!-- ============ ПОИСК ============ -->
+    <section id="tab-search" class="tab active">
+      <div class="page-header">
+        <h1>Поиск вакансий</h1>
+        <p>Фильтры задаются в настройках аккаунта. Автопоиск держит соединение и сразу показывает новые вакансии.</p>
+      </div>
+
+      <div class="panel" style="display:none;">
+        <div class="prefs-launch">
+          <div class="prefs-kv-grid" id="search-prefs-summary"></div>
+          <div class="actions" style="margin-top:0;">
+            <button class="primary" id="btn-search">Автопоиск</button>
+            <button type="button" class="ghost" id="btn-goto-search-prefs">Настроить в аккаунте</button>
+            <button type="button" class="ghost" id="btn-toggle-search-override">Разовый запрос</button>
+            <span class="live-pill" id="search-live-pill" hidden>в эфире</span>
+            <span class="status" id="status-text"></span>
+          </div>
+        </div>
+        <div id="log-panel"></div>
+        <div class="override-panel" id="search-override" hidden>
+        <div class="hint-inline" style="margin-bottom:12px;">Разовый запрос не меняет настройки аккаунта. Чтобы запомнить фильтры — сохраните их как свои.</div>
+        <div class="form-grid">
+          <div class="field" style="grid-column: span 2;">
+            <label id="lbl-sources">Источники</label>
+            <div class="sources" role="group" aria-labelledby="lbl-sources">
+              <label class="chip active" id="chip-djinni">
+                <input type="checkbox" value="djinni" checked> <span class="dot djinni"></span> djinni.co
+              </label>
+              <label class="chip active" id="chip-workua">
+                <input type="checkbox" value="workua" checked> <span class="dot workua"></span> work.ua
+              </label>
+              <label class="chip active" id="chip-rabotaua">
+                <input type="checkbox" value="rabotaua" checked> <span class="dot rabotaua"></span> robota.ua
+              </label>
+              <label class="chip" id="chip-jooble">
+                <input type="checkbox" value="jooble"> <span class="dot jooble"></span> jooble.org
+              </label>
+            </div>
+            <div class="hint-inline" id="jooble-hint" hidden>jooble.org подключает владелец сайта в админке.</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-keywords">Категория</label>
+            <div class="region-chip-row" id="keyword-chips" role="group" aria-labelledby="lbl-keywords">
+              {% set chip_class = 'chip' %}
+              {% set chip_attr = 'data-region-chip' %}
+              {% include '_keyword_chips.html' %}
+            </div>
+            <input type="text" id="f-keyword-extra" placeholder="Другая категория — через запятую" aria-label="Другие категории">
+            <div class="hint-inline">Можно выбрать несколько — сохранятся все. На djinni.co каждая категория ищется отдельно. Если текстовый запрос пустой, work.ua, robota.ua и jooble.org тоже ищут по каждой.</div>
+          </div>
+          <div class="field">
+            <label for="f-query">Текстовый запрос</label>
+            <input type="text" id="f-query" placeholder="data engineer">
+            <div class="hint-inline">Основной поиск на work.ua, robota.ua и jooble.org.</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-regions">Регионы</label>
+            <div class="region-chip-row" id="region-chips" role="group" aria-labelledby="lbl-regions">
+              <label class="chip" data-region-chip><input type="checkbox" value="Київ"> Київ</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Львів"> Львів</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Дніпро"> Дніпро</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Харків"> Харків</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Одеса"> Одеса</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Вінниця"> Вінниця</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Запоріжжя"> Запоріжжя</label>
+            </div>
+            <input type="text" id="f-region-extra" placeholder="Другой город — через запятую" aria-label="Другие города">
+            <div class="hint-inline">Можно выбрать несколько. Если ничего не отмечено — поиск по всей Украине.</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>Удалёнка</label>
+            <div class="region-chip-row" id="f-remote-chips" role="radiogroup">
+              <label class="chip active" data-choice-chip><input type="radio" name="f-remote" value="" checked> Не важно</label>
+              <label class="chip" data-choice-chip><input type="radio" name="f-remote" value="remote"> Только удалёнка</label>
+              <label class="chip" data-choice-chip><input type="radio" name="f-remote" value="include"> Удалёнка + города</label>
+            </div>
+            <div class="hint-inline">На work.ua удалёнка — отдельный регион. «Удалёнка + города» ищет и в выбранных городах, и дистанционно.</div>
+          </div>
+          <div class="field">
+            <label>Бронювання</label>
+            <label class="chip" id="f-reservation-chip" data-choice-chip>
+              <input type="checkbox" id="f-reservation"> Только с бронюванням
+            </label>
+            <div class="hint-inline">djinni.co, work.ua и robota.ua. У jooble.org такого фильтра нет.</div>
+          </div>
+          <div class="search-paging">
+            <div class="field" id="pages-field">
+              <label for="f-pages">Страниц</label>
+              <input type="number" id="f-pages" value="1" min="1" max="10">
+            </div>
+            <div class="field">
+              <label for="f-delay">Пауза, сек</label>
+              <input type="number" id="f-delay" value="3" min="1" max="10" step="0.5">
+              <div class="hint-inline" id="delay-hint">Для work.ua не меньше 3 сек.</div>
+            </div>
+            <div class="field">
+              <label for="f-all-pages">Объём выдачи</label>
+              <label class="chip active" id="chip-all-pages">
+                <input type="checkbox" id="f-all-pages" checked> Все страницы
+              </label>
+              <div class="hint-inline">work.ua и robota.ua — до конца выдачи. djinni.co — до 30 страниц.</div>
+            </div>
+          </div>
+          <div class="actions" style="margin-top:8px;">
+            <button type="button" class="ghost" id="btn-save-search-as-prefs">Запомнить как мои фильтры</button>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="panel" id="results-panel" style="display:none;">
+        <div class="results-toolbar">
+          <div class="rt-row">
+            <div class="rt-search">
+              <svg class="rt-search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M16 16l-3.6-3.6"/></svg>
+              <input type="text" id="filter-text" placeholder="Фильтр по названию / компании / описанию…">
+            </div>
+            <select id="filter-source">
+              <option value="">Все источники</option>
+              <option value="djinni">djinni.co</option>
+              <option value="workua">work.ua</option>
+              <option value="rabotaua">robota.ua</option>
+              <option value="jooble">jooble.org</option>
+            </select>
+            <select id="sort-by">
+              <option value="default">Порядок как найдено</option>
+              <option value="title">По названию</option>
+              <option value="company">По компании</option>
+            </select>
+          </div>
+          <div class="rt-row rt-row-actions">
+            <div class="rt-cluster">
+              <select id="match-cv-select">
+                <option value="">ИИ-оценка: выберите резюме</option>
+              </select>
+              <button type="button" class="ghost" id="btn-rank-jobs">Подобрать по резюме</button>
+            </div>
+            <div class="rt-stats">
+              <span class="count-badge" id="count-badge"></span>
+              <span class="source-breakdown" id="source-breakdown"></span>
+            </div>
+            <div class="rt-cluster">
+              <button class="ghost" id="btn-export-csv">Экспорт CSV</button>
+              <button class="ghost" id="btn-export-json">Экспорт JSON</button>
+            </div>
+          </div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="empty-msg" style="display:none;">Ничего не найдено под текущий фильтр.</div>
+      </div>
+    </section>
+
+    <!-- ============ РЫНОК КАНДИДАТОВ ============ -->
+    <section id="tab-market" class="tab">
+      <div class="page-header">
+        <h1>Рынок кандидатов</h1>
+        <p>Публичные резюме с тех же площадок — для примеров формулировок и аналитики рынка. Имена и контакты не собираем. Вход на площадки задаёт владелец в админке.</p>
+      </div>
+
+      <div class="hint-inline" id="market-boards-hint" hidden style="margin-bottom:14px;">Владелец ещё не задал вход на площадки в админке — без сессии ленты резюме закрыты.</div>
+
+      <div class="panel" style="display:none;">
+        <div class="prefs-launch">
+          <div class="prefs-kv-grid" id="market-prefs-summary"></div>
+          <div class="actions" style="margin-top:0;">
+            <button class="primary" id="btn-market">Собрать примеры</button>
+            <button type="button" class="ghost" id="btn-goto-market-prefs">Настроить в аккаунте</button>
+            <span class="status" id="market-status"></span>
+          </div>
+        </div>
+        <div id="market-log"></div>
+        <div class="override-panel" id="market-override" hidden>
+        <div class="hint-inline" style="margin-bottom:12px;">Разовый запрос не меняет настройки аккаунта. jooble.org резюме не публикует.</div>
+        <div class="form-grid">
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-m-sources">Источники</label>
+            <div class="sources" id="m-sources" role="group" aria-labelledby="lbl-m-sources">
+              <label class="chip active" id="m-chip-djinni"><input type="checkbox" value="djinni" checked> <span class="dot djinni"></span> djinni.co</label>
+              <label class="chip active" id="m-chip-workua"><input type="checkbox" value="workua" checked> <span class="dot workua"></span> work.ua</label>
+              <label class="chip active" id="m-chip-rabotaua"><input type="checkbox" value="rabotaua" checked> <span class="dot rabotaua"></span> robota.ua</label>
+              <label class="chip is-disabled" title="jooble.org не публикует резюме кандидатов" aria-disabled="true">
+                <input type="checkbox" value="jooble" disabled> <span class="dot jooble"></span> jooble.org
+              </label>
+            </div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-m-keywords">Категория</label>
+            <div class="region-chip-row" id="m-keyword-chips" role="group" aria-labelledby="lbl-m-keywords">
+              {% set chip_class = 'chip' %}
+              {% set chip_attr = 'data-region-chip' %}
+              {% include '_keyword_chips.html' %}
+            </div>
+            <input type="text" id="m-keyword-extra" placeholder="Другая категория — через запятую" aria-label="Другие категории">
+            <div class="hint-inline">Можно выбрать несколько. Если запрос пустой, площадки ищут по каждой категории.</div>
+          </div>
+          <div class="field">
+            <label for="m-query">Запрос</label>
+            <input type="text" id="m-query" placeholder="python developer">
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-m-regions">Регионы</label>
+            <div class="region-chip-row" id="m-region-chips" role="group" aria-labelledby="lbl-m-regions">
+              <label class="chip" data-region-chip><input type="checkbox" value="Київ"> Київ</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Львів"> Львів</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Дніпро"> Дніпро</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Харків"> Харків</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Одеса"> Одеса</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Вінниця"> Вінниця</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Запоріжжя"> Запоріжжя</label>
+            </div>
+            <input type="text" id="m-region-extra" placeholder="Другой город — через запятую" aria-label="Другие города">
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>Удалёнка</label>
+            <div class="region-chip-row" id="m-remote-chips" role="radiogroup">
+              <label class="chip active" data-choice-chip><input type="radio" name="m-remote" value="" checked> Не важно</label>
+              <label class="chip" data-choice-chip><input type="radio" name="m-remote" value="remote"> Только удалёнка</label>
+              <label class="chip" data-choice-chip><input type="radio" name="m-remote" value="include"> Удалёнка + города</label>
+            </div>
+          </div>
+          <div class="search-paging">
+            <div class="field" id="m-pages-field">
+              <label for="m-pages">Страниц</label>
+              <input type="number" id="m-pages" value="1" min="1" max="10">
+            </div>
+            <div class="field">
+              <label for="m-delay">Пауза, сек</label>
+              <input type="number" id="m-delay" value="3" min="1" max="10" step="0.5">
+            </div>
+            <div class="field">
+              <label for="m-all-pages">Объём</label>
+              <label class="chip" id="m-chip-all-pages">
+                <input type="checkbox" id="m-all-pages"> Все страницы (до 10)
+              </label>
+            </div>
+          </div>
+          <div class="actions" style="margin-top:8px;">
+            <button type="button" class="ghost" id="btn-save-market-as-prefs">Запомнить как мои фильтры</button>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="panel" id="market-analysis-panel" style="display:none;">
+        <div class="section-label">Аналитика рынка</div>
+        <div class="market-stats" id="market-stats"></div>
+      </div>
+
+      <div class="panel" id="market-examples-panel" style="display:none;">
+        <div class="section-label">Примеры формулировок</div>
+        <div class="example-list" id="market-examples"></div>
+      </div>
+
+      <div class="panel" id="market-results-panel" style="display:none;">
+        <div class="section-label">Карточки резюме</div>
+        <div class="toolbar">
+          <input type="text" id="m-filter-text" placeholder="Фильтр по должности / навыкам…">
+          <select id="m-filter-source">
+            <option value="">Все источники</option>
+            <option value="djinni">djinni.co</option>
+            <option value="workua">work.ua</option>
+            <option value="rabotaua">robota.ua</option>
+          </select>
+          <select id="market-cv-select">
+            <option value="">Без сверки — только рынок</option>
+          </select>
+          <span class="count-badge" id="m-count-badge"></span>
+        </div>
+        <div class="grid" id="market-grid"></div>
+        <div class="empty" id="market-empty" style="display:none;">Ничего не найдено под текущий фильтр.</div>
+      </div>
+    </section>
+    <section id="tab-cvs" class="tab">
+      <div class="page-header">
+        <h1>Резюме</h1>
+        <p>Загружайте готовые файлы или собирайте резюме в конструкторе. Кнопка «Аналитика HR» на карточке разбирает резюме по шагам — оценка, флаги, траектория, сверка с рынком.</p>
+      </div>
+
+      <div class="subtabs">
+        <button class="subtab-item active" data-subtab="list">Мои резюме</button>
+        <button class="subtab-item" data-subtab="ai-generate"><svg class="icn" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5l1.2 3.6L15 7.5l-3.8 1.4L10 12.5l-1.2-3.6L5 7.5l3.8-1.4L10 2.5z"/><path d="M16 12l.6 1.8 1.9.7-1.9.7L16 17l-.6-1.8-1.9-.7 1.9-.7L16 12z"/></svg>Создать с ИИ</button>
+        <button class="subtab-item" data-subtab="templates"><svg class="icn" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="6.5" height="6.5" rx="1.3"/><rect x="11" y="2.5" width="6.5" height="6.5" rx="1.3"/><rect x="2.5" y="11" width="6.5" height="6.5" rx="1.3"/><rect x="11" y="11" width="6.5" height="6.5" rx="1.3"/></svg>Шаблоны</button>
+        <button class="subtab-item" data-subtab="builder">Конструктор</button>
+      </div>
+
+      <div id="subtab-list" class="subtab-panel active">
+        <div class="panel">
+          <div class="dropzone" id="dropzone">
+            <div>Перетащите файл сюда или нажмите, чтобы выбрать</div>
+            <div class="fmt-hint">PDF, DOCX или TXT, до 20 МБ</div>
+            <input type="file" id="cv-file-input" accept=".pdf,.docx,.txt">
+          </div>
+          <div id="cv-upload-status" class="status" style="margin-top:10px;"></div>
+
+          <div class="cv-list" id="cv-list"></div>
+          <div class="empty" id="cv-empty" style="display:none;">Резюме ещё не загружены.</div>
+        </div>
+      </div>
+
+      <div id="subtab-ai-generate" class="subtab-panel">
+        <div class="ai-wizard">
+          <div class="ai-wizard-steps" id="ai-wizard-steps">
+            <div class="ai-step active" data-step="input">
+              <div class="ai-step-num">1</div>
+              <div class="ai-step-label">Расскажите о себе</div>
+            </div>
+            <div class="ai-step-line" data-line="1"></div>
+            <div class="ai-step" data-step="clarify">
+              <div class="ai-step-num">2</div>
+              <div class="ai-step-label">Уточнение</div>
+            </div>
+            <div class="ai-step-line" data-line="2"></div>
+            <div class="ai-step" data-step="review">
+              <div class="ai-step-num">3</div>
+              <div class="ai-step-label">Проверка фактов</div>
+            </div>
+            <div class="ai-step-line" data-line="3"></div>
+            <div class="ai-step" data-step="done">
+              <div class="ai-step-num">4</div>
+              <div class="ai-step-label">Готово</div>
+            </div>
+          </div>
+
+          <div class="ai-stage active" data-stage="input">
+            <div class="panel ai-build-panel">
+              <div class="ai-build-title">Напишите о себе — как угодно, без структуры</div>
+              <div class="hint-inline">Где работали, кем, чем занимались, что заканчивали, какими инструментами и технологиями владеете. ИИ разберёт текст сам — и не добавит ни одного факта, которого там нет.</div>
+              <textarea id="ai-build-text" rows="8" placeholder="Например: работаю Python-разработчиком 3 года, до этого год стажировался в стартапе, писал бэкенд на Django, делал интеграции с внешними API. Учился на КНУ, факультет информатики. Английский на уровне B1..." style="margin-top:12px;"></textarea>
+              <div class="ai-build-chips" id="ai-build-chips">
+                <button type="button" class="ai-chip" data-hint="Место работы и должность: ">Место работы</button>
+                <button type="button" class="ai-chip" data-hint="Ключевые задачи и достижения: ">Достижения</button>
+                <button type="button" class="ai-chip" data-hint="Образование: ">Образование</button>
+                <button type="button" class="ai-chip" data-hint="Технологии и навыки: ">Навыки</button>
+                <button type="button" class="ai-chip" data-hint="Языки и уровень: ">Языки</button>
+              </div>
+              <div class="actions" style="margin-top:14px;">
+                <button type="button" class="primary" id="btn-ai-build-analyze">Проанализировать →</button>
+                <span class="status" id="ai-build-status"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-stage" data-stage="loading">
+            <div class="panel ai-loading-panel">
+              <div class="ai-loading-spinner"><div></div><div></div><div></div></div>
+              <div class="ai-loading-text" id="ai-loading-text">Читаем ваш текст…</div>
+            </div>
+          </div>
+
+          <div class="ai-stage" data-stage="clarify">
+            <div class="panel ai-build-panel">
+              <div class="ai-build-title">ИИ уточняет несколько деталей</div>
+              <div class="hint-inline">Ответьте на то, что знаете — необязательно на всё. Пустой ответ просто останется пустым полем в резюме, а не выдумкой.</div>
+              <div id="ai-build-questions-list" style="margin-top:12px;"></div>
+              <div class="actions" style="margin-top:14px;">
+                <button type="button" class="primary" id="btn-ai-build-finish">Собрать резюме →</button>
+                <span class="status" id="ai-build-finish-status"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-stage" data-stage="review">
+            <div class="ai-review-head">
+              <div class="ai-build-title">Проверьте факты перед сохранением</div>
+              <div class="hint-inline">ИИ извлёк из вашего текста только то, что там реально было. Пройдитесь по карточкам — поправьте неточности или уберите лишнее.</div>
+            </div>
+            <div class="ai-review-grid" id="ai-review-grid"></div>
+            <div class="actions" style="margin-top:18px;">
+              <button type="button" class="ghost" id="btn-ai-restart">← Начать заново</button>
+              <button type="button" class="primary" id="btn-ai-confirm">Подтвердить и открыть в конструкторе ✓</button>
+            </div>
+          </div>
+
+          <div class="ai-stage" data-stage="done">
+            <div class="panel ai-done-panel">
+              <div class="ai-done-check">✓</div>
+              <div class="ai-build-title">Резюме собрано</div>
+              <div class="hint-inline">Открываем его в конструкторе — там можно доредактировать поля, выбрать шаблон и сохранить.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="subtab-templates" class="subtab-panel">
+        <div class="tpl-gallery-layout">
+          <div class="panel tpl-gallery-controls">
+            <div class="section-label">Структура</div>
+            <div class="hint-inline">Раскладка резюме — определяет расположение блоков и графику.</div>
+            <div class="tpl-struct-grid" id="tpl-struct-grid"></div>
+
+            <div class="section-label" style="margin-top:20px;">Тема</div>
+            <div class="hint-inline">Цвет и градиент. Сгруппированы по настроению — <span id="tpl-theme-count"></span>.</div>
+            <div class="tpl-theme-groups" id="tpl-theme-groups"></div>
+          </div>
+
+          <div class="tpl-gallery-preview">
+            <div class="preview-toolbar">
+              <span class="zoom-label" id="tpl-preview-label">Иван Петров — Frontend Developer</span>
+            </div>
+            <div class="resume-preview-frame" id="tpl-preview-frame"></div>
+            <div class="tpl-gallery-actions">
+              <button type="button" class="primary" id="btn-tpl-use-new">Создать новое резюме с этим шаблоном</button>
+              <button type="button" class="ghost" id="btn-tpl-apply-current" style="display:none;">Применить к текущему резюме</button>
+              <span class="status" id="tpl-apply-status"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="subtab-builder" class="subtab-panel">
+
+      <div class="builder-layout">
+        <div class="panel builder-form">
+
+          <div class="combo-tpl-banner" id="combo-tpl-banner" style="display:none;">
+            <span id="combo-tpl-banner-text"></span>
+            <button type="button" class="ghost small-add" id="btn-combo-tpl-reset">Сбросить на пресеты</button>
+          </div>
+
+          <div class="import-strip">
+            <div class="field" style="min-width:180px; margin:0;">
+              <label for="import-resume-source">Подтянуть моё резюме</label>
+              <select id="import-resume-source">
+                <option value="djinni">djinni.co</option>
+                <option value="workua">work.ua</option>
+                <option value="rabota">robota.ua</option>
+              </select>
+            </div>
+            <button type="button" class="ghost" id="btn-import-resume-builder" style="margin-top:18px;">Подтянуть</button>
+          </div>
+          <div class="hint-inline" style="margin-bottom:14px;">Площадка подключается логином соискателя в аккаунте. Ссылку вставлять не нужно — кабинет найдём сами.</div>
+
+          <div class="field">
+            <label>Шаблон</label>
+            <div class="hint-inline" style="margin-bottom:8px;">Быстрые пресеты ниже — или откройте вкладку «Шаблоны» для выбора из 500+ комбинаций структуры и темы.</div>
+            <div class="tpl-gallery" id="template-picker">
+              <label class="tpl-card active" data-tpl="classic">
+                <input type="radio" name="tpl" value="classic" checked>
+                <div class="tpl-thumb tpl-thumb-classic">
+                  <div class="tpl-line tpl-line-name"></div>
+                  <div class="tpl-line tpl-line-sub"></div>
+                  <div class="tpl-line"></div>
+                  <div class="tpl-line short"></div>
+                </div>
+                <div class="tpl-card-foot">Классический<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="modern">
+                <input type="radio" name="tpl" value="modern">
+                <div class="tpl-thumb tpl-thumb-modern">
+                  <div class="tpl-thumb-side"></div>
+                  <div class="tpl-thumb-main"><div class="tpl-line"></div><div class="tpl-line short"></div></div>
+                </div>
+                <div class="tpl-card-foot">Современный<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="modern-light">
+                <input type="radio" name="tpl" value="modern-light">
+                <div class="tpl-thumb tpl-thumb-modern-light">
+                  <div class="tpl-thumb-side-light"></div>
+                  <div class="tpl-thumb-main"><div class="tpl-line"></div><div class="tpl-line short"></div></div>
+                </div>
+                <div class="tpl-card-foot">Современный светлый<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="minimal">
+                <input type="radio" name="tpl" value="minimal">
+                <div class="tpl-thumb tpl-thumb-minimal">
+                  <div class="tpl-line-underline"></div>
+                  <div class="tpl-line short" style="margin-top:10px;"></div>
+                </div>
+                <div class="tpl-card-foot">Минимал<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="executive">
+                <input type="radio" name="tpl" value="executive">
+                <div class="tpl-thumb tpl-thumb-executive">
+                  <div class="tpl-exec-name"></div>
+                  <div class="tpl-exec-rule"></div>
+                  <div class="tpl-exec-cols"><div class="tpl-exec-main"></div><div class="tpl-exec-side"></div></div>
+                </div>
+                <div class="tpl-card-foot">Executive<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="compact-ats">
+                <input type="radio" name="tpl" value="compact-ats">
+                <div class="tpl-thumb tpl-thumb-ats">
+                  <div class="tpl-line tpl-line-name" style="background:#000;"></div>
+                  <div class="tpl-line" style="background:#333;top:26px;"></div>
+                  <div class="tpl-line" style="background:#888;top:46px;"></div>
+                  <div class="tpl-line short" style="background:#888;top:54px;"></div>
+                </div>
+                <div class="tpl-card-foot">ATS-простой<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="creative">
+                <input type="radio" name="tpl" value="creative">
+                <div class="tpl-thumb tpl-thumb-creative">
+                  <div class="tpl-creative-band"></div>
+                  <div class="tpl-line" style="top:56px;"></div>
+                  <div class="tpl-line short" style="top:64px;"></div>
+                </div>
+                <div class="tpl-card-foot">Креативный<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="creative-purple">
+                <input type="radio" name="tpl" value="creative-purple">
+                <div class="tpl-thumb tpl-thumb-creative-purple">
+                  <div class="tpl-creative-band-purple"></div>
+                  <div class="tpl-line" style="top:56px;"></div>
+                  <div class="tpl-line short" style="top:64px;"></div>
+                </div>
+                <div class="tpl-card-foot">Креативный фиолетовый<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="editorial">
+                <input type="radio" name="tpl" value="editorial">
+                <div class="tpl-thumb tpl-thumb-editorial">
+                  <div class="ed-thumb-eyebrow"></div>
+                  <div class="ed-thumb-name"></div>
+                  <div class="ed-thumb-name short"></div>
+                  <div class="ed-thumb-rule"></div>
+                  <div class="ed-thumb-cols"><div></div><div></div></div>
+                </div>
+                <div class="tpl-card-foot">Редакционный<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="geo-bold">
+                <input type="radio" name="tpl" value="geo-bold">
+                <div class="tpl-thumb tpl-thumb-geo-bold">
+                  <div class="gb-thumb-circle"></div>
+                  <div class="gb-thumb-name"></div>
+                  <div class="gb-thumb-bars">
+                    <div style="width:80%;"></div>
+                    <div style="width:60%;"></div>
+                    <div style="width:40%;"></div>
+                  </div>
+                </div>
+                <div class="tpl-card-foot">Гео<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="twotone-split">
+                <input type="radio" name="tpl" value="twotone-split">
+                <div class="tpl-thumb tpl-thumb-twotone-split">
+                  <div class="ts-thumb-panel"><div class="ts-thumb-badge"></div></div>
+                  <div class="ts-thumb-main"><div></div><div></div><div style="width:60%;"></div></div>
+                </div>
+                <div class="tpl-card-foot">Двойной срез<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="mono-grid">
+                <input type="radio" name="tpl" value="mono-grid">
+                <div class="tpl-thumb tpl-thumb-mono-grid">
+                  <div class="mg-thumb-name"></div>
+                  <div class="mg-thumb-ruler"></div>
+                  <div class="mg-thumb-row"><div class="mg-thumb-index">01</div><div></div></div>
+                  <div class="mg-thumb-row"><div class="mg-thumb-index">02</div><div></div></div>
+                </div>
+                <div class="tpl-card-foot">Швейцарская сетка<span class="tpl-check">✓</span></div>
+              </label>
+              <label class="tpl-card" data-tpl="custom">
+                <input type="radio" name="tpl" value="custom">
+                <div class="tpl-thumb tpl-thumb-canvas">
+                  <div class="tpl-canvas-block" style="left:10px;top:10px;width:60px;height:12px;"></div>
+                  <div class="tpl-canvas-block" style="left:10px;top:28px;width:36px;height:36px;"></div>
+                  <div class="tpl-canvas-block" style="left:50px;top:30px;width:24px;height:16px;"></div>
+                  <div class="tpl-canvas-block" style="left:50px;top:50px;width:24px;height:14px;"></div>
+                </div>
+                <div class="tpl-card-foot">Свободный холст<span class="tpl-check">✓</span></div>
+              </label>
+            </div>
+          </div>
+          <div class="hint-inline" style="margin-top:8px;" id="canvas-hint">На «Свободном холсте» блоки резюме можно перетаскивать и менять им размер прямо в превью справа — за иконку с названием в углу блока и точку в углу. При перетаскивании блоки сами выравниваются по краям и центрам соседних — зажмите Alt, чтобы отключить выравнивание.</div>
+          <div class="canvas-tools" id="canvas-tools" style="display:none; margin-top:10px;">
+            <button type="button" class="ghost small-add" id="btn-add-photo">+ Добавить фото</button>
+            <input type="file" id="canvas-image-input" accept=".png,.jpg,.jpeg,.webp" style="display:none;">
+            <div class="shape-picker-wrap">
+              <button type="button" class="ghost small-add" id="btn-add-shape">+ Добавить графику</button>
+              <div class="shape-picker-popover" id="shape-picker-popover" hidden></div>
+            </div>
+            <label class="canvas-effect-label">Эффект блоков
+              <select id="canvas-effect">
+                <option value="none">Без эффекта</option>
+                <option value="shadow">Тень + карточки</option>
+                <option value="border">Акцентная рамка</option>
+                <option value="rounded">Скруглённые углы</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="builder-section-block ai-assist-block">
+            <div class="builder-section-head"><label>ИИ-ассистент</label></div>
+            <div class="hint-inline">Сгенерирует «О себе» и упорядочит уже введённые навыки по данным резюме — без выдумывания опыта. Можно вставить текст вакансии, чтобы подогнать под неё.</div>
+            <textarea id="ai-job-description" rows="3" placeholder="Необязательно: вставьте текст вакансии, чтобы подогнать резюме под неё…" style="margin-top:8px;"></textarea>
+            <div class="actions" style="margin-top:8px;">
+              <button type="button" class="ghost small-add" id="btn-ai-generate-summary"><svg class="icn" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5l1.2 3.6L15 7.5l-3.8 1.4L10 12.5l-1.2-3.6L5 7.5l3.8-1.4L10 2.5z"/><path d="M16 12l.6 1.8 1.9.7-1.9.7L16 17l-.6-1.8-1.9-.7 1.9-.7L16 12z"/></svg>Сгенерировать / подогнать «О себе»</button>
+            </div>
+            <div class="hint-inline" style="margin-top:8px;">Полный разбор — кнопка «Аналитика HR» в «Мои резюме». Здесь же, во вкладке «Виртуальный HR», можно гонять отдельные проверки.</div>
+          </div>
+
+          <div class="avatar-uploader">
+            <div class="avatar-uploader-preview" id="avatar-preview"><span id="avatar-placeholder">Фото</span></div>
+            <div class="avatar-uploader-actions">
+              <div class="hint-inline">Необязательно: фото используется только в шаблонах, где оно предусмотрено дизайном («Редакционный», «Гео», «Двойной срез»).</div>
+              <div class="actions" style="margin-top:6px;">
+                <button type="button" class="ghost small-add" id="btn-add-avatar">+ Добавить фото</button>
+                <button type="button" class="ghost small-add" id="btn-remove-avatar" style="display:none;">Удалить фото</button>
+                <input type="file" id="avatar-file-input" accept=".png,.jpg,.jpeg,.webp" style="display:none;">
+              </div>
+              <span class="status" id="avatar-upload-status"></span>
+            </div>
+          </div>
+
+          <div class="form-grid" style="margin-top:18px;">
+            <div class="field"><label>Имя</label><input type="text" id="r-name" placeholder="Иван Іванов"></div>
+            <div class="field"><label>Желаемая позиция</label><input type="text" id="r-headline" placeholder="Python Developer"></div>
+            <div class="field"><label>Email</label><input type="text" id="r-email" placeholder="ivan@example.com"></div>
+            <div class="field"><label>Телефон</label><input type="text" id="r-phone" placeholder="+380 ..."></div>
+            <div class="field"><label>Город</label><input type="text" id="r-location" placeholder="Київ"></div>
+          </div>
+
+          <div class="field" style="margin-top:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label>О себе</label>
+              <button type="button" class="ai-improve-btn" data-target="r-summary" data-context="раздел «о себе» в резюме"><svg class="icn" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5l1.2 3.6L15 7.5l-3.8 1.4L10 12.5l-1.2-3.6L5 7.5l3.8-1.4L10 2.5z"/><path d="M16 12l.6 1.8 1.9.7-1.9.7L16 17l-.6-1.8-1.9-.7 1.9-.7L16 12z"/></svg>Улучшить с ИИ</button>
+            </div>
+            <textarea id="r-summary" rows="3" placeholder="Коротко о профессиональном опыте и сильных сторонах…"></textarea>
+          </div>
+
+          <div class="builder-section-block">
+            <div class="builder-section-head"><label>Опыт работы</label><button class="ghost small-add" id="add-experience">+ Добавить</button></div>
+            <div id="experience-list"></div>
+          </div>
+
+          <div class="builder-section-block">
+            <div class="builder-section-head"><label>Образование</label><button class="ghost small-add" id="add-education">+ Добавить</button></div>
+            <div id="education-list"></div>
+          </div>
+
+          <div class="field" style="margin-top:16px;">
+            <label>Навыки (через запятую)</label>
+            <input type="text" id="r-skills" placeholder="Python, Django, SQL, Docker">
+          </div>
+
+          <div class="builder-section-block">
+            <div class="builder-section-head"><label>Языки</label><button class="ghost small-add" id="add-language">+ Добавить</button></div>
+            <div id="language-list"></div>
+          </div>
+
+          <div class="builder-section-block">
+            <div class="builder-section-head"><label>Ссылки</label><button class="ghost small-add" id="add-link">+ Добавить</button></div>
+            <div id="link-list"></div>
+          </div>
+
+          <div class="builder-section-block">
+            <div class="builder-section-head"><label>Достижения и метрики</label><button class="ghost small-add" id="add-achievement">+ Добавить</button></div>
+            <p class="section-hint">Конкретные цифры вместо общих слов: «+40% — ускорил деплой», «12 — команда под управлением».</p>
+            <div id="achievement-list"></div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" id="btn-save-resume">Сохранить</button>
+            <button class="ghost" id="btn-new-resume">Новое резюме</button>
+            <button class="ghost" id="btn-download-resume">Скачать PDF</button>
+            <span class="status" id="resume-save-status"></span>
+          </div>
+        </div>
+
+        <div class="builder-preview">
+          <div class="preview-toolbar">
+            <span class="zoom-label" id="zoom-label">По ширине · 72%</span>
+            <button type="button" class="ghost small-add" id="btn-unlock-drag" style="display:none;" title="Включить свободное перетаскивание блоков в этом шаблоне">🔓 Разрешить перетаскивание</button>
+          </div>
+          <div class="resume-preview-frame" id="resume-preview"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px;">
+        <div class="section-label">Сохранённые резюме</div>
+        <div class="cv-list" id="resume-list"></div>
+        <div class="empty" id="resume-list-empty" style="display:none;">Пока нет сохранённых резюме — заполните форму выше.</div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ============ ВИРТУАЛЬНЫЙ HR ============ -->
+    <section id="tab-hr" class="tab">
+      <div class="page-header">
+        <h1>Виртуальный HR</h1>
+        <p>Разбирает резюме, которое сейчас открыто в «Резюме» → «Конструктор» — честно, без прикрас, с опорой на реальные данные, а не выдумки. Откройте нужное резюме в конструкторе, потом возвращайтесь сюда.</p>
+      </div>
+      <div class="actions" style="margin-bottom: var(--sp-5);">
+        <button type="button" class="ghost" id="btn-hr-open-builder">Открыть конструктор →</button>
+      </div>
+
+      <div class="panel">
+        <div class="section-label">Оценка резюме целиком</div>
+        <div class="hint-inline">Чек-лист по структуре/контактам/ATS + оценка ИИ по формулировкам, необязательно — сверка с реальным рынком.</div>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="primary" id="btn-ai-audit">Оценить резюме</button>
+          <label class="audit-market-toggle"><input type="checkbox" id="audit-compare-market"> Сравнить с рынком</label>
+        </div>
+        <div class="hint-inline" id="audit-market-hint" style="display:none;">Дополнительно спарсит несколько реальных вакансий и резюме под вашу «Желаемую позицию» на djinni.co и robota.ua и сравнит с ними — займёт больше времени, чем обычная оценка.</div>
+        <div id="ai-audit-result" class="ai-audit-box" style="display:none;"></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-label">Красные флаги</div>
+        <div class="hint-inline">Разрывы в датах, частая смена мест, расплывчатые формулировки — то, что реально смущает рекрутера. Честно, без выдумывания рисков, которых нет.</div>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="primary" id="btn-hr-redflags">Проверить на красные флаги</button>
+        </div>
+        <div id="hr-redflags-result" class="ai-audit-box" style="display:none;"></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-label">Карьерная траектория</div>
+        <div class="hint-inline">2-3 логичных следующих шага, исходя из реальной истории опыта — не абстрактный совет «расти дальше».</div>
+        <div class="actions" style="margin-top:10px;">
+          <button type="button" class="primary" id="btn-hr-trajectory">Предложить траекторию</button>
+        </div>
+        <div id="hr-trajectory-result" class="ai-audit-box" style="display:none;"></div>
+      </div>
+
+      <div class="panel">
+        <div class="section-label">Тренажёр собеседования</div>
+        <div class="hint-inline">Назначьте резюме и вакансию — собеседование начнётся сразу, шаг за шагом, как живой разговор с HR.</div>
+        <div class="form-grid" style="margin-top:10px;">
+          <div class="field">
+            <label for="hr-cv-select">Резюме</label>
+            <select id="hr-cv-select">
+              <option value="">Резюме, открытое в конструкторе</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="hr-job-select">Вакансия</label>
+            <select id="hr-job-select">
+              <option value="">Без вакансии — общие вопросы по резюме</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="hr-interview-job" rows="2" placeholder="Или вставьте текст вакансии вручную, если её нет в списке выше…" style="margin-top:8px;"></textarea>
+        <div class="actions" style="margin-top:8px;">
+          <button type="button" class="primary" id="btn-hr-interview-start">Начать собеседование</button>
+          <button type="button" class="ghost" id="btn-hr-interview-restart" style="display:none;">Начать заново</button>
+        </div>
+        <div class="hr-chat" id="hr-chat" style="display:none;">
+          <div class="hr-chat-log" id="hr-chat-log"></div>
+          <div class="hr-chat-input-row">
+            <textarea id="hr-chat-answer" rows="2" placeholder="Ваш ответ…"></textarea>
+            <button type="button" class="small-primary" id="btn-hr-chat-send">Отправить</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ АККАУНТ ============ -->
+    <section id="tab-settings" class="tab">
+      <div class="page-header">
+        <h1>Аккаунт</h1>
+        <p>Профиль и фильтры поиска. Ключи ИИ и Jooble задаёт владелец сайта — они работают для всех аккаунтов.</p>
+      </div>
+
+      <div class="acct-subtabs" role="tablist">
+        <button type="button" class="acct-subtab active" data-acct="profile">Профиль</button>
+        <button type="button" class="acct-subtab" data-acct="search">Поиск</button>
+      </div>
+
+      <div class="acct-panel active" data-acct-panel="profile">
+      <div class="panel">
+        <div class="section-label">Контакты</div>
+        <div class="hint-inline" style="margin-bottom:14px;">Имя, фамилия, телефон и email — для входа, бокового меню и подстановки в резюме.</div>
+        <div class="form-grid">
+          <div class="field"><label for="profile-first-name">Имя</label><input type="text" id="profile-first-name" placeholder="Иван" autocomplete="given-name"></div>
+          <div class="field"><label for="profile-last-name">Фамилия</label><input type="text" id="profile-last-name" placeholder="Іванов" autocomplete="family-name"></div>
+          <div class="field"><label for="profile-email">Email</label><input type="email" id="profile-email" placeholder="you@example.com" autocomplete="email"></div>
+          <div class="field"><label for="profile-phone">Телефон</label><input type="tel" id="profile-phone" placeholder="+380 ..." autocomplete="tel"></div>
+          <div class="field"><label for="profile-location">Город</label><input type="text" id="profile-location" placeholder="Київ" autocomplete="address-level2"></div>
+        </div>
+        <div class="field" style="grid-column: 1 / -1; margin-top:14px;">
+          <label id="lbl-profile-headline">Желаемая должность</label>
+          <div class="region-chip-row" id="profile-headline-chips" role="group" aria-labelledby="lbl-profile-headline">
+            {% set chip_class = 'chip' %}
+            {% set chip_attr = 'data-region-chip' %}
+            {% include '_keyword_chips.html' %}
+          </div>
+          <div class="key-row" style="margin-top:8px;">
+            <input type="text" id="profile-headline-extra" placeholder="Другая должность — через запятую" aria-label="Другие должности" style="flex:1; min-width:200px;">
+            <button type="button" class="ghost small-add" id="btn-suggest-headline">✨ Предложить с ИИ</button>
+          </div>
+          <div class="hint-inline" id="suggest-headline-status"></div>
+          <div class="hint-inline">Можно выбрать несколько — используются и в резюме, и при сверке с рынком труда. «Предложить с ИИ» подберёт подходящие по загруженному резюме.</div>
+        </div>
+        <div class="actions" style="margin-top:14px;">
+          <button type="button" class="primary" id="btn-save-profile">Сохранить профиль</button>
+          <span class="status" id="profile-save-status"></span>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px;">
+        <div class="section-label">Моё резюме с площадок</div>
+        <div class="hint-inline" style="margin-bottom:14px;">Войдите в <b>свой</b> аккаунт соискателя на каждой площадке: покажем резюме из кабинета здесь, на профиле. Это не кабинет работодателя и не чужие CV. Пароль хранится только у вас, чтобы заходить снова.</div>
+        <div class="provider-card" data-board="djinni">
+          <div class="provider-card-head">
+            <div class="provider-name"><span class="dot djinni"></span> djinni.co</div>
+            <span class="provider-status unset" id="board-status-djinni">не подключено</span>
+          </div>
+          <div class="key-row">
+            <div class="field"><label for="board-email-djinni">Email</label><input type="email" id="board-email-djinni" placeholder="логин на djinni.co" autocomplete="off"></div>
+            <div class="field"><label for="board-password-djinni">Пароль</label><input type="password" id="board-password-djinni" placeholder="пароль площадки" autocomplete="new-password"></div>
+          </div>
+          <div class="board-actions">
+            <button type="button" class="small-primary" data-connect-board="djinni">Войти и показать</button>
+            <button type="button" class="danger-ghost" data-disconnect-board="djinni">Отключить</button>
+          </div>
+          <div class="board-resumes" id="board-resumes-djinni" hidden aria-live="polite"></div>
+        </div>
+        <div class="provider-card" data-board="workua">
+          <div class="provider-card-head">
+            <div class="provider-name"><span class="dot workua"></span> work.ua</div>
+            <span class="provider-status unset" id="board-status-workua">не подключено</span>
+          </div>
+          <div class="key-row">
+            <div class="field"><label for="board-email-workua">Email</label><input type="email" id="board-email-workua" placeholder="логин соискателя work.ua" autocomplete="off"></div>
+            <div class="field"><label for="board-password-workua">Пароль</label><input type="password" id="board-password-workua" placeholder="пароль площадки" autocomplete="new-password"></div>
+          </div>
+          <div class="board-actions">
+            <button type="button" class="small-primary" data-connect-board="workua">Войти и показать</button>
+            <button type="button" class="danger-ghost" data-disconnect-board="workua">Отключить</button>
+          </div>
+          <div class="board-resumes" id="board-resumes-workua" hidden aria-live="polite"></div>
+        </div>
+        <div class="provider-card" data-board="rabota">
+          <div class="provider-card-head">
+            <div class="provider-name"><span class="dot rabotaua"></span> robota.ua</div>
+            <span class="provider-status unset" id="board-status-rabota">не подключено</span>
+          </div>
+          <div class="key-row">
+            <div class="field"><label for="board-email-rabota">Email</label><input type="email" id="board-email-rabota" placeholder="логин соискателя robota.ua" autocomplete="off"></div>
+            <div class="field"><label for="board-password-rabota">Пароль</label><input type="password" id="board-password-rabota" placeholder="пароль площадки" autocomplete="new-password"></div>
+          </div>
+          <div class="board-actions">
+            <button type="button" class="small-primary" data-connect-board="rabota">Войти и показать</button>
+            <button type="button" class="danger-ghost" data-disconnect-board="rabota">Отключить</button>
+          </div>
+          <div class="board-resumes" id="board-resumes-rabota" hidden aria-live="polite"></div>
+        </div>
+        <span class="status" id="import-resume-status"></span>
+      </div>
+      </div>
+
+      <div class="acct-panel" data-acct-panel="search">
+      <div class="panel">
+        <div class="section-label">Фильтры поиска</div>
+        <div class="hint-inline" style="margin-bottom:14px;">Эти значения — ваши настройки по умолчанию. На вкладках «Поиск» и «Рынок» они подставляются автоматически; разовый запрос их не перезаписывает.</div>
+        <div class="form-grid">
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-pref-sources">Источники</label>
+            <div class="sources" id="pref-sources" role="group" aria-labelledby="lbl-pref-sources">
+              <label class="chip" id="pref-chip-djinni"><input type="checkbox" id="pref-src-djinni" value="djinni"> <span class="dot djinni"></span> djinni.co</label>
+              <label class="chip" id="pref-chip-workua"><input type="checkbox" id="pref-src-workua" value="workua"> <span class="dot workua"></span> work.ua</label>
+              <label class="chip" id="pref-chip-rabotaua"><input type="checkbox" id="pref-src-rabotaua" value="rabotaua"> <span class="dot rabotaua"></span> robota.ua</label>
+              <label class="chip" id="pref-chip-jooble"><input type="checkbox" id="pref-src-jooble" value="jooble"> <span class="dot jooble"></span> jooble.org</label>
+            </div>
+            <div class="hint-inline" id="pref-jooble-hint" hidden>jooble.org подключает владелец сайта в админке.</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label id="lbl-pref-keywords">Категория</label>
+            <div class="region-chip-row" id="pref-keyword-chips" role="group" aria-labelledby="lbl-pref-keywords">
+              {% set chip_class = 'chip' %}
+              {% set chip_attr = 'data-region-chip' %}
+              {% include '_keyword_chips.html' %}
+            </div>
+            <input type="text" id="pref-keyword-extra" placeholder="Другая категория — через запятую" aria-label="Другие категории">
+            <div class="hint-inline">Можно выбрать несколько — все сохранятся в аккаунте. djinni.co ищет каждую специализацию отдельно. Если текстовый запрос пустой, work.ua, robota.ua и jooble.org тоже ищут по каждой.</div>
+          </div>
+          <div class="field">
+            <label for="pref-query">Текстовый запрос</label>
+            <input type="text" id="pref-query" placeholder="data engineer">
+            <div class="hint-inline">Основной поиск на work.ua, robota.ua и jooble.org.</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>Регионы</label>
+            <div class="region-chip-row" id="pref-region-chips" role="group">
+              <label class="chip" data-region-chip><input type="checkbox" value="Київ"> Київ</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Львів"> Львів</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Дніпро"> Дніпро</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Харків"> Харків</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Одеса"> Одеса</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Вінниця"> Вінниця</label>
+              <label class="chip" data-region-chip><input type="checkbox" value="Запоріжжя"> Запоріжжя</label>
+            </div>
+            <input type="text" id="pref-region-extra" placeholder="Другой город — через запятую" aria-label="Другие города">
+            <div class="hint-inline">Можно выбрать несколько. Если ничего не отмечено — поиск по всей Украине.</div>
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>Удалёнка</label>
+            <div class="region-chip-row" id="pref-remote-chips" role="radiogroup">
+              <label class="chip active" data-choice-chip><input type="radio" name="pref-remote" value="" checked> Не важно</label>
+              <label class="chip" data-choice-chip><input type="radio" name="pref-remote" value="remote"> Только удалёнка</label>
+              <label class="chip" data-choice-chip><input type="radio" name="pref-remote" value="include"> Удалёнка + города</label>
+            </div>
+            <div class="hint-inline">На work.ua удалёнка — отдельный регион, не вид занятости. «Удалёнка + города» добавляет дистанционные вакансии к выбранным городам.</div>
+          </div>
+          <div class="field">
+            <label>Бронювання</label>
+            <label class="chip" id="pref-reservation-chip" data-choice-chip>
+              <input type="checkbox" id="pref-reservation"> Только вакансии с бронюванням
+            </label>
+            <div class="hint-inline">djinni.co — раздел l-reservation, work.ua — /jobs/deferment/, robota.ua — бейдж. Jooble.org фильтра не даёт.</div>
+          </div>
+          <div class="search-paging">
+            <div class="field" id="pref-pages-field">
+              <label for="pref-pages">Страниц</label>
+              <input type="number" id="pref-pages" value="1" min="1" max="10">
+            </div>
+            <div class="field">
+              <label for="pref-delay">Пауза, сек</label>
+              <input type="number" id="pref-delay" value="3" min="1" max="10" step="0.5">
+              <div class="hint-inline" id="pref-delay-hint">Для work.ua не меньше 3 сек.</div>
+            </div>
+            <div class="field">
+              <label for="pref-all-pages">Объём выдачи</label>
+              <label class="chip active" id="pref-all-pages-chip">
+                <input type="checkbox" id="pref-all-pages" checked> Все страницы
+              </label>
+              <div class="hint-inline">work.ua и robota.ua — до конца выдачи. djinni.co — до 30 страниц.</div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pref-employment">Занятость</label>
+            <select id="pref-employment">
+              <option value="">Не важно</option>
+              <option value="full-time">Полная</option>
+              <option value="part-time">Частичная</option>
+              <option value="contract">Проектная</option>
+              <option value="internship">Стажировка</option>
+            </select>
+          </div>
+          <div class="field"><label for="pref-salary">Ожидаемая зарплата</label><input type="text" id="pref-salary" placeholder="$2000-3000"></div>
+        </div>
+        <div class="hint-inline" style="margin-top:10px;">Занятость и зарплата сохраняются в аккаунте. Удалёнка и бронювання участвуют в поиске.</div>
+        <div class="actions" style="margin-top:14px;">
+          <button type="button" class="primary" id="btn-save-prefs">Сохранить фильтры</button>
+          <span class="status" id="prefs-save-status"></span>
+        </div>
+      </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<nav class="mobile-tabbar" aria-label="Основные разделы">
+  <button type="button" class="mobile-tab active" data-tab="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    Поиск
+  </button>
+  <button type="button" class="mobile-tab" data-tab="market">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V5"/><path d="M10 19V9"/><path d="M16 19V3"/><path d="M22 19V11"/></svg>
+    Рынок
+  </button>
+  <button type="button" class="mobile-tab" data-tab="cvs">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+    Резюме
+  </button>
+  <button type="button" class="mobile-tab" data-tab="hr">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.5 21c0-3.6-2.9-6.5-6.5-6.5h-2c-3.6 0-6.5 2.9-6.5 6.5"/><circle cx="13.5" cy="7.5" r="4"/></svg>
+    HR
+  </button>
+  <button type="button" class="mobile-tab" data-tab="settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Ещё
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<div class="jp-modal" id="modal-profile-gate">
+  <div class="jp-modal-backdrop" data-close-modal="modal-profile-gate"></div>
+  <div class="jp-modal-card" role="dialog" aria-labelledby="gate-profile-title">
+    <h2 id="gate-profile-title">Расскажите о себе</h2>
+    <p class="hint-inline">Имя, телефон и должность подставятся в резюме и в поиск. Можно заполнить позже.</p>
+    <div class="form-grid" style="margin-top:14px;">
+      <div class="field"><label>Имя</label><input type="text" id="gate-first-name" autocomplete="given-name"></div>
+      <div class="field"><label>Фамилия</label><input type="text" id="gate-last-name" autocomplete="family-name"></div>
+      <div class="field"><label>Email</label><input type="email" id="gate-email" autocomplete="email"></div>
+      <div class="field"><label>Телефон</label><input type="tel" id="gate-phone" autocomplete="tel"></div>
+      <div class="field"><label>Город</label><input type="text" id="gate-location"></div>
+      <div class="field"><label>Желаемая должность</label><input type="text" id="gate-headline" placeholder="Python Developer"></div>
+    </div>
+    <div class="actions" style="margin-top:16px;">
+      <button type="button" class="primary" id="btn-gate-profile-save">Сохранить</button>
+      <button type="button" class="ghost" id="btn-gate-profile-later">Ввести позже</button>
+      <span class="status" id="gate-profile-status"></span>
+    </div>
+  </div>
+</div>
+
+<div class="jp-modal" id="modal-import-gate">
+  <div class="jp-modal-backdrop" data-close-modal="modal-import-gate"></div>
+  <div class="jp-modal-card" role="dialog" aria-labelledby="gate-import-title">
+    <h2 id="gate-import-title">Подтянуть резюме с площадки</h2>
+    <p class="hint-inline">Войдите в <b>свой</b> аккаунт соискателя на djinni.co, work.ua или robota.ua. Ссылку вставлять не нужно — найдём резюме в кабинете.</p>
+    <div class="field" style="margin-top:14px;">
+      <label for="gate-import-source">Площадка</label>
+      <select id="gate-import-source">
+        <option value="djinni">djinni.co</option>
+        <option value="workua">work.ua</option>
+        <option value="rabota">robota.ua</option>
+      </select>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label for="gate-import-email">Email</label><input type="email" id="gate-import-email" autocomplete="off"></div>
+      <div class="field"><label for="gate-import-password">Пароль</label><input type="password" id="gate-import-password" autocomplete="new-password"></div>
+    </div>
+    <div class="actions" style="margin-top:16px;">
+      <button type="button" class="primary" id="btn-gate-import-go">Подтянуть</button>
+      <button type="button" class="ghost" id="btn-gate-import-later">Ввести позже</button>
+      <span class="status" id="gate-import-status"></span>
+    </div>
+  </div>
+</div>
+
+<div class="jp-modal" id="modal-job-detail">
+  <div class="jp-modal-backdrop"></div>
+  <div class="jp-modal-card jp-modal-card-wide" role="dialog" aria-labelledby="detail-title">
+    <button type="button" class="icon-btn-ghost jp-modal-close" id="btn-detail-close" title="Закрыть">✕</button>
+    <div class="card-top">
+      <span class="src-badge" id="detail-src-badge"></span>
+    </div>
+    <h2 id="detail-title" style="margin-top:8px;"></h2>
+    <div class="company" id="detail-company"></div>
+    <div class="salary" id="detail-salary" style="margin-top:4px;"></div>
+    <div class="meta" id="detail-meta" style="margin-top:4px;"></div>
+    <div class="job-detail-desc" id="detail-description"></div>
+    <div class="actions" style="margin-top:14px;">
+      <a class="ghost small-add" id="detail-link" href="#" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center;">Открыть на сайте →</a>
+      <button type="button" class="small-primary" id="btn-detail-match">Оценить с ИИ</button>
+      <button type="button" class="small-primary" id="btn-detail-cover">Написать письмо</button>
+    </div>
+    <div class="match-box" id="detail-match-box"></div>
+    <div class="match-box" id="detail-cover-box"></div>
+
+    <div class="builder-section-block" style="margin-top:16px;">
+      <div class="builder-section-head"><label>Отправка резюме</label></div>
+      <div id="detail-apply-section" style="display:none;">
+        <div class="hint-inline">Нужен подключённый аккаунт соискателя djinni.co (Резюме → «Подтянуть с площадки»). Первый нажим — только проверка, ничего не отправляет; отправляет только «Точно отправить».</div>
+        <div class="actions" style="margin-top:8px;">
+          <button type="button" class="primary" id="btn-detail-apply">Отправить резюме</button>
+          <button type="button" class="ghost" id="btn-detail-apply-confirm" style="display:none; border-color:var(--danger); color:var(--danger);">Точно отправить</button>
+        </div>
+        <div class="match-box" id="detail-apply-box"></div>
+      </div>
+      <div class="hint-inline" id="detail-apply-hint">Автоматическая отправка резюме пока доступна только для вакансий djinni.co.</div>
+    </div>
+  </div>
+</div>
+
+<div class="jp-modal" id="modal-rank-jobs">
+  <div class="jp-modal-backdrop" id="rank-jobs-backdrop"></div>
+  <div class="jp-modal-card jp-modal-card-wide" role="dialog" aria-labelledby="rank-jobs-title">
+    <button type="button" class="icon-btn-ghost jp-modal-close" id="btn-rank-jobs-close" title="Закрыть">✕</button>
+    <h2 id="rank-jobs-title" style="margin-top:8px;">Подбор вакансий по резюме</h2>
+    <p class="hint-inline">Сначала быстро сверяем ключевые слова резюме со всеми найденными вакансиями, затем для 5 лучших совпадений отдельно спрашиваем ИИ — оттуда сильные стороны и пробелы.</p>
+    <div id="rank-jobs-status" class="status"></div>
+    <div id="rank-jobs-list"></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/resume-render.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

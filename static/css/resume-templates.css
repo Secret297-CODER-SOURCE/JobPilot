@@ -1,0 +1,595 @@
+/* Шаблоны резюме конструктора — используются и для живого превью в приложении,
+   и для отдельной печатной страницы (/resume/<id>/print). Рассчитаны на белый лист. */
+
+.resume-page {
+  background: #ffffff;
+  color: #1a1f27;
+  font-family: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 16mm 16mm;
+  box-sizing: border-box;
+}
+.resume-page * { box-sizing: border-box; }
+.resume-page h1, .resume-page h2, .resume-page h3 { font-family: "Sora", sans-serif; margin: 0; }
+.resume-section { margin-top: 16px; }
+.resume-section:first-of-type { margin-top: 0; }
+.resume-section-title {
+  font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.resume-entry { margin-bottom: 10px; }
+.resume-entry:last-child { margin-bottom: 0; }
+.resume-entry-head { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: 13.5px; }
+.resume-entry-sub { font-size: 12.5px; opacity: .75; margin-top: 1px; }
+.resume-entry-period { font-size: 11.5px; white-space: nowrap; opacity: .6; font-family: "IBM Plex Mono", monospace; }
+.resume-entry-desc { font-size: 12.5px; margin-top: 4px; opacity: .85; white-space: pre-wrap; }
+.resume-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+.resume-skill-chip { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; }
+.resume-empty-hint { opacity: .4; font-style: italic; }
+.resume-achievements { display: flex; flex-wrap: wrap; gap: 12px; }
+.resume-achievement-card {
+  flex: 1 1 140px; min-width: 120px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(0,0,0,.035); border: 1px solid rgba(0,0,0,.07);
+}
+.resume-achievement-value { font-size: 21px; font-weight: 700; line-height: 1; }
+.resume-achievement-label { font-size: 11px; opacity: .7; margin-top: 4px; }
+.resume-achievement-desc { font-size: 11px; opacity: .6; margin-top: 4px; white-space: pre-wrap; }
+
+/* ---- Общие приёмы для авторских шаблонов ниже: контакты со значками, полосы навыков ---- */
+.contact-icon-row { display: flex; align-items: center; gap: 7px; font-size: 11.5px; margin-bottom: 5px; }
+.contact-icon-row:last-child { margin-bottom: 0; }
+.contact-icon { width: 13px; height: 13px; flex-shrink: 0; display: inline-flex; }
+.contact-icon svg { width: 100%; height: 100%; }
+.skill-bar-row { margin-bottom: 9px; }
+.skill-bar-row:last-child { margin-bottom: 0; }
+.skill-bar-label { font-size: 11.5px; font-weight: 600; margin-bottom: 3px; }
+.skill-bar-track { height: 5px; border-radius: 3px; background: rgba(0,0,0,.08); overflow: hidden; }
+.skill-bar-fill { height: 100%; border-radius: 3px; }
+
+/* ---------- Classic: одна колонка, серьёзные засечки в имени, тонкие линии ---------- */
+
+.resume-page.tpl-classic .resume-header { text-align: center; border-bottom: 2px solid #1a1f27; padding-bottom: 12px; margin-bottom: 18px; }
+.resume-page.tpl-classic .resume-name { font-size: 26px; font-weight: 700; }
+.resume-page.tpl-classic .resume-headline { font-size: 14px; opacity: .7; margin-top: 3px; }
+.resume-page.tpl-classic .resume-contacts { font-size: 11.5px; opacity: .65; margin-top: 8px; font-family: "IBM Plex Mono", monospace; }
+.resume-page.tpl-classic .resume-section-title { color: #1a1f27; border-bottom: 1px solid #d8dce3; padding-bottom: 4px; }
+.resume-page.tpl-classic .resume-skill-chip { background: #f0f1f4; color: #1a1f27; }
+
+/* ---------- Modern: тёмный сайдбар слева, акцентный цвет ---------- */
+
+.resume-page.tpl-modern { padding: 0; display: grid; grid-template-columns: 68mm 1fr; }
+.resume-page.tpl-modern .resume-sidebar {
+  background: #16202b; color: #eef2f6; padding: 16mm 10mm; display: flex; flex-direction: column; gap: 18px;
+}
+.resume-page.tpl-modern .resume-main { padding: 16mm 14mm; }
+.resume-page.tpl-modern .resume-name { font-size: 21px; font-weight: 700; line-height: 1.25; }
+.resume-page.tpl-modern .resume-headline { font-size: 12.5px; color: #35b6a0; margin-top: 4px; font-weight: 600; }
+.resume-page.tpl-modern .resume-contacts { font-size: 11px; opacity: .8; margin-top: 10px; display: flex; flex-direction: column; gap: 3px; font-family: "IBM Plex Mono", monospace; }
+.resume-page.tpl-modern .resume-sidebar .resume-section-title { color: #7fd9c9; }
+.resume-page.tpl-modern .resume-sidebar .resume-entry-sub,
+.resume-page.tpl-modern .resume-sidebar .resume-entry-period { opacity: .75; }
+.resume-page.tpl-modern .resume-skill-chip { background: rgba(255,255,255,.08); color: #eef2f6; }
+.resume-page.tpl-modern .resume-main .resume-section-title { color: #16202b; border-left: 3px solid #35b6a0; padding-left: 8px; }
+
+/* ---------- Modern light: та же раскладка, светлый сайдбар, фиолетовый акцент ---------- */
+
+.resume-page.tpl-modern-light { padding: 0; display: grid; grid-template-columns: 68mm 1fr; }
+.resume-page.tpl-modern-light .resume-sidebar {
+  background: #f1eefb; color: #2a2140; padding: 16mm 10mm; display: flex; flex-direction: column; gap: 18px;
+}
+.resume-page.tpl-modern-light .resume-main { padding: 16mm 14mm; }
+.resume-page.tpl-modern-light .resume-name { font-size: 21px; font-weight: 700; line-height: 1.25; color: #2a2140; }
+.resume-page.tpl-modern-light .resume-headline { font-size: 12.5px; color: #7c3aed; margin-top: 4px; font-weight: 600; }
+.resume-page.tpl-modern-light .resume-contacts { font-size: 11px; opacity: .75; margin-top: 10px; display: flex; flex-direction: column; gap: 3px; font-family: "IBM Plex Mono", monospace; }
+.resume-page.tpl-modern-light .resume-sidebar .resume-section-title { color: #7c3aed; }
+.resume-page.tpl-modern-light .resume-sidebar .resume-entry-sub,
+.resume-page.tpl-modern-light .resume-sidebar .resume-entry-period { opacity: .7; }
+.resume-page.tpl-modern-light .resume-skill-chip { background: rgba(124,58,237,.1); color: #5b21b6; }
+.resume-page.tpl-modern-light .resume-main .resume-section-title { color: #2a2140; border-left: 3px solid #7c3aed; padding-left: 8px; }
+
+/* ---------- Minimal: много воздуха, без линий, тонкий подчёркнутый акцент под именем ---------- */
+
+.resume-page.tpl-minimal .resume-header { margin-bottom: 22px; }
+.resume-page.tpl-minimal .resume-name { font-size: 24px; font-weight: 600; display: inline-block; padding-bottom: 6px; border-bottom: 2px solid #35b6a0; }
+.resume-page.tpl-minimal .resume-headline { font-size: 13px; opacity: .6; margin-top: 8px; }
+.resume-page.tpl-minimal .resume-contacts { font-size: 11.5px; opacity: .55; margin-top: 6px; font-family: "IBM Plex Mono", monospace; }
+.resume-page.tpl-minimal .resume-section-title { color: #9aa4b2; font-weight: 500; }
+.resume-page.tpl-minimal .resume-section { margin-top: 22px; }
+.resume-page.tpl-minimal .resume-skill-chip { background: transparent; border: 1px solid #d8dce3; color: #1a1f27; }
+
+/* ---------- Executive: серьёзная типографика, две колонки, для senior/корпоративных ролей ---------- */
+
+.resume-page.tpl-executive .resume-header { text-align: center; }
+.resume-page.tpl-executive .resume-name { font-family: "Source Serif 4", Georgia, serif; font-size: 27px; font-weight: 600; letter-spacing: .01em; color: #14243b; }
+.resume-page.tpl-executive .resume-headline { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-size: 14px; opacity: .72; margin-top: 4px; }
+.resume-page.tpl-executive .resume-contacts { font-size: 11px; opacity: .6; margin-top: 9px; font-family: "IBM Plex Mono", monospace; }
+.resume-exec-body {
+  display: grid; grid-template-columns: 2fr 1fr; gap: 26px;
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid #1e3a5f;
+}
+.resume-page.tpl-executive .resume-section-title {
+  font-family: "Source Serif 4", Georgia, serif; font-weight: 600; text-transform: none;
+  letter-spacing: 0; font-size: 13.5px; color: #1e3a5f;
+  border-bottom: 1px solid #d8dce3; padding-bottom: 5px;
+}
+.resume-page.tpl-executive .resume-sidebar-right .resume-section-title { font-size: 12.5px; }
+.resume-page.tpl-executive .resume-skill-chip { background: #eef2f7; color: #1e3a5f; border: 1px solid #dbe2ea; }
+.resume-page.tpl-executive .resume-sidebar-right { display: flex; flex-direction: column; gap: 18px; }
+
+/* ---------- ATS / Compact: максимально простой чёрно-белый, для парсеров резюме ---------- */
+
+.resume-page.tpl-compact-ats { font-size: 12.5px; line-height: 1.5; color: #000; }
+.resume-page.tpl-compact-ats .resume-header { border-bottom: 1.5px solid #000; padding-bottom: 8px; margin-bottom: 4px; }
+.resume-page.tpl-compact-ats .resume-name { font-size: 19px; font-weight: 700; font-family: "IBM Plex Sans", sans-serif; }
+.resume-page.tpl-compact-ats .resume-headline { font-size: 12.5px; margin-top: 2px; }
+.resume-page.tpl-compact-ats .resume-contacts { font-size: 11px; margin-top: 4px; opacity: .8; }
+.resume-page.tpl-compact-ats .resume-section-title {
+  font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #000;
+}
+.resume-page.tpl-compact-ats .resume-skills { display: block; }
+.resume-page.tpl-compact-ats .resume-skill-chip { background: none; padding: 0; font-size: 12.5px; }
+.resume-page.tpl-compact-ats .resume-skill-chip:not(:last-child)::after { content: " · "; }
+
+/* ---------- Creative: цветной хедер-баннер, для дизайна/маркетинга ---------- */
+
+.resume-page.tpl-creative { padding-top: 0; }
+.resume-page.tpl-creative .resume-header {
+  background: linear-gradient(135deg, #e8734a, #f0a35f);
+  color: #fff; margin: -16mm -16mm 16px; padding: 16mm 16mm 18px;
+}
+.resume-page.tpl-creative .resume-name { font-size: 26px; font-weight: 700; }
+.resume-page.tpl-creative .resume-headline { font-size: 13.5px; opacity: .92; margin-top: 4px; }
+.resume-page.tpl-creative .resume-contacts { font-size: 11px; opacity: .88; margin-top: 8px; font-family: "IBM Plex Mono", monospace; }
+.resume-page.tpl-creative .resume-contacts a { color: #fff; }
+.resume-page.tpl-creative .resume-section-title { color: #d8632f; }
+.resume-page.tpl-creative .resume-skill-chip { background: rgba(232,115,74,.12); color: #c85a33; }
+
+/* ---------- Creative purple: тот же баннер, фиолетово-синий градиент ---------- */
+
+.resume-page.tpl-creative-purple { padding-top: 0; }
+.resume-page.tpl-creative-purple .resume-header {
+  background: linear-gradient(135deg, #6d28d9, #a855f7);
+  color: #fff; margin: -16mm -16mm 16px; padding: 16mm 16mm 18px;
+}
+.resume-page.tpl-creative-purple .resume-name { font-size: 26px; font-weight: 700; }
+.resume-page.tpl-creative-purple .resume-headline { font-size: 13.5px; opacity: .92; margin-top: 4px; }
+.resume-page.tpl-creative-purple .resume-contacts { font-size: 11px; opacity: .88; margin-top: 8px; font-family: "IBM Plex Mono", monospace; }
+.resume-page.tpl-creative-purple .resume-contacts a { color: #fff; }
+.resume-page.tpl-creative-purple .resume-section-title { color: #7c3aed; }
+.resume-page.tpl-creative-purple .resume-skill-chip { background: rgba(124,58,237,.12); color: #6d28d9; }
+
+/* ============================================================
+   Авторские шаблоны — не структура×тема из галереи ниже, а собственная
+   типографика, графика и (где уместно) фото под конкретную идею.
+   ============================================================ */
+
+/* ---- Редакционный: журнальная полоса, крупная гарнитура с засечками ---- */
+
+.resume-page.tpl-editorial {
+  background: #fdfcfa; color: #211d18;
+  font-family: "IBM Plex Sans", -apple-system, sans-serif;
+}
+.tpl-editorial .ed-masthead { display: flex; justify-content: space-between; align-items: flex-start; }
+.tpl-editorial .ed-eyebrow {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .16em; color: #b5451b;
+}
+.tpl-editorial .ed-avatar {
+  width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+  filter: grayscale(.85) sepia(.12); flex-shrink: 0;
+}
+.tpl-editorial .ed-name {
+  font-family: "Fraunces", "Source Serif 4", Georgia, serif; font-weight: 600;
+  font-size: 44px; line-height: .98; letter-spacing: -.01em; margin-top: 8px;
+}
+.tpl-editorial .ed-rule { height: 2px; background: #211d18; margin: 14px 0 8px; width: 100%; }
+.tpl-editorial .ed-contacts {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .04em; opacity: .6;
+}
+.tpl-editorial .ed-body { display: grid; grid-template-columns: 1.6fr 1fr; gap: 30px; margin-top: 24px; }
+.tpl-editorial .ed-aside { border-left: 1px solid #e4ddd0; padding-left: 22px; }
+.tpl-editorial .ed-heading {
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em; color: #b5451b; margin: 18px 0 8px;
+}
+.tpl-editorial .ed-heading:first-child { margin-top: 0; }
+.tpl-editorial .ed-intro {
+  font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 16px;
+  line-height: 1.5; color: #3a352e; margin-bottom: 4px;
+}
+.tpl-editorial .ed-entry { margin-bottom: 14px; }
+.tpl-editorial .ed-entry-head { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: 13.5px; }
+.tpl-editorial .ed-entry-period { font-family: "IBM Plex Mono", monospace; font-size: 11px; opacity: .55; white-space: nowrap; }
+.tpl-editorial .ed-entry-company { font-size: 12px; opacity: .65; font-style: italic; margin-top: 1px; }
+.tpl-editorial .ed-entry-desc { font-size: 12.5px; margin-top: 5px; opacity: .85; white-space: pre-wrap; }
+.tpl-editorial .ed-entry-sub { font-size: 12px; margin-bottom: 8px; }
+.tpl-editorial .ed-entry-sub .ed-entry-period { margin-top: 2px; }
+.tpl-editorial .ed-skill-list { font-size: 12px; display: flex; flex-direction: column; gap: 4px; }
+.tpl-editorial .ed-stat-row { display: flex; gap: 24px; flex-wrap: wrap; margin: 6px 0 18px; }
+.tpl-editorial .ed-stat-value { font-family: "Fraunces", "Source Serif 4", Georgia, serif; font-weight: 600; font-size: 27px; line-height: 1; color: #b5451b; }
+.tpl-editorial .ed-stat-label { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; opacity: .6; margin-top: 5px; }
+
+/* ---- Гео: жирная геометрия, значки-контакты, полосы навыков ---- */
+
+.resume-page.tpl-geo-bold {
+  background: #fff; color: #101014; padding: 0; position: relative; overflow: hidden;
+  font-family: "IBM Plex Sans", -apple-system, sans-serif;
+}
+.tpl-geo-bold .gb-shape-1 {
+  position: absolute; top: -46mm; right: -30mm; width: 100mm; height: 100mm; border-radius: 50%;
+  background: #d4ff3d; z-index: 0;
+}
+.tpl-geo-bold .gb-shape-2 {
+  position: absolute; top: 14mm; right: 36mm; width: 18mm; height: 18mm; border-radius: 50%;
+  background: #101014; z-index: 0;
+}
+.tpl-geo-bold .gb-header { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; padding: 16mm 16mm 0; }
+.tpl-geo-bold .gb-name {
+  font-family: "Space Grotesk", "Sora", sans-serif; font-weight: 700; font-size: 34px; line-height: 1.05;
+}
+.tpl-geo-bold .gb-headline { font-family: "Space Grotesk", sans-serif; font-weight: 500; font-size: 14px; margin-top: 6px; }
+.tpl-geo-bold .gb-avatar {
+  width: 84px; height: 84px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+  border: 4px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,.15);
+}
+.tpl-geo-bold .gb-contacts {
+  position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 4px 18px;
+  padding: 14px 16mm 0; margin-top: 6px;
+}
+.tpl-geo-bold .gb-contacts .contact-icon { color: #101014; }
+.tpl-geo-bold .gb-summary { padding: 14px 16mm 0; font-size: 13px; line-height: 1.6; max-width: 78%; }
+.tpl-geo-bold .gb-body { display: grid; grid-template-columns: 1.7fr 1fr; gap: 26px; padding: 20px 16mm 16mm; }
+.tpl-geo-bold .gb-heading {
+  font-family: "Space Grotesk", sans-serif; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em; margin: 16px 0 10px;
+}
+.tpl-geo-bold .gb-heading:first-child { margin-top: 0; }
+.tpl-geo-bold .gb-entry { display: flex; gap: 10px; margin-bottom: 14px; }
+.tpl-geo-bold .gb-entry-dot {
+  width: 9px; height: 9px; background: #101014; margin-top: 5px; flex-shrink: 0;
+  transform: rotate(45deg);
+}
+.tpl-geo-bold .gb-entry-role { font-weight: 700; font-size: 13px; }
+.tpl-geo-bold .gb-entry-company { font-weight: 500; opacity: .7; }
+.tpl-geo-bold .gb-entry-period { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; opacity: .55; margin-top: 1px; }
+.tpl-geo-bold .gb-entry-desc { font-size: 12px; margin-top: 5px; opacity: .82; white-space: pre-wrap; }
+.tpl-geo-bold .skill-bar-fill { background: #101014; }
+.tpl-geo-bold .gb-lang-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.tpl-geo-bold .gb-lang-chip { font-size: 11px; font-weight: 600; background: #f0f2ea; padding: 4px 10px; border-radius: 999px; }
+.tpl-geo-bold .gb-stat-row { position: relative; z-index: 1; display: flex; gap: 24px; flex-wrap: wrap; padding: 12px 16mm 0; max-width: 78%; }
+.tpl-geo-bold .gb-stat-value { font-family: "Space Grotesk", "Sora", sans-serif; font-weight: 800; font-size: 27px; line-height: 1; }
+.tpl-geo-bold .gb-stat-label { font-size: 10.5px; opacity: .68; margin-top: 4px; max-width: 22ch; }
+
+/* ---- Двойной срез: тёмная панель со скошенным краем, фото или медальон ---- */
+
+.resume-page.tpl-twotone-split { padding: 0; display: grid; grid-template-columns: 72mm 1fr; }
+.tpl-twotone-split .ts-panel {
+  background: #111827; color: #f4f1ea; padding: 16mm 14mm 16mm 10mm; position: relative;
+  clip-path: polygon(0 0, 100% 0, 87% 100%, 0 100%);
+}
+.tpl-twotone-split .ts-ruler {
+  height: 5px; margin-bottom: 16px; position: relative; z-index: 1;
+  background-image: repeating-linear-gradient(to right, #d9a441 0, #d9a441 1.5px, transparent 1.5px, transparent 7px);
+}
+.tpl-twotone-split .ts-avatar {
+  width: 76px; height: 76px; border-radius: 50%; object-fit: cover; position: relative; z-index: 1;
+  border: 3px solid #d9a441; margin-bottom: 14px; display: block;
+}
+.tpl-twotone-split .ts-badge {
+  width: 76px; height: 76px; border-radius: 50%; position: relative; z-index: 1; margin-bottom: 14px;
+  background: linear-gradient(135deg, #d9a441, #8a6620); color: #111827;
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px;
+  font-family: "Archivo", "Sora", sans-serif;
+}
+.tpl-twotone-split .ts-name {
+  position: relative; z-index: 1; font-family: "Archivo", "Sora", sans-serif; font-weight: 900;
+  font-size: 24px; line-height: 1.08;
+}
+.tpl-twotone-split .ts-headline { position: relative; z-index: 1; font-size: 12px; color: #d9a441; font-weight: 600; margin-top: 6px; }
+.tpl-twotone-split .ts-contacts { position: relative; z-index: 1; margin-top: 16px; }
+.tpl-twotone-split .ts-contacts .contact-icon { color: #d9a441; }
+.tpl-twotone-split .ts-panel-heading {
+  position: relative; z-index: 1; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: #d9a441; margin: 18px 0 8px;
+}
+.tpl-twotone-split .ts-chip-row { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 6px; }
+.tpl-twotone-split .ts-chip { font-size: 10.5px; background: rgba(217,164,65,.16); color: #f4f1ea; padding: 3px 9px; border-radius: 999px; }
+.tpl-twotone-split .ts-lang-row { position: relative; z-index: 1; display: flex; justify-content: space-between; font-size: 11.5px; margin-bottom: 4px; opacity: .85; }
+.tpl-twotone-split .ts-content { padding: 16mm 14mm; color: #1a1f27; }
+.tpl-twotone-split .ts-intro { font-size: 13px; line-height: 1.6; opacity: .85; margin-bottom: 18px; }
+.tpl-twotone-split .ts-stat-row { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 18px; }
+.tpl-twotone-split .ts-stat-value { font-family: "Archivo", "Sora", sans-serif; font-weight: 800; font-size: 25px; color: #111827; line-height: 1; }
+.tpl-twotone-split .ts-stat-label { font-size: 10.5px; opacity: .65; margin-top: 4px; max-width: 20ch; }
+.tpl-twotone-split .ts-content-heading {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  color: #111827; border-bottom: 2px solid #d9a441; display: inline-block; padding-bottom: 3px; margin: 16px 0 10px;
+}
+.tpl-twotone-split .ts-content-heading:first-child { margin-top: 0; }
+.tpl-twotone-split .ts-entry { margin-bottom: 12px; }
+.tpl-twotone-split .ts-entry-head { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: 13px; }
+.tpl-twotone-split .ts-entry-period { font-family: "IBM Plex Mono", monospace; font-size: 11px; opacity: .55; white-space: nowrap; }
+.tpl-twotone-split .ts-entry-desc { font-size: 12px; margin-top: 4px; opacity: .82; white-space: pre-wrap; }
+
+/* ---- Швейцарская сетка: типографика вместо декора, номера разделов, разметка-линейка ---- */
+
+.resume-page.tpl-mono-grid { background: #fff; color: #0a0a0a; font-family: "IBM Plex Sans", sans-serif; }
+.tpl-mono-grid .mg-name {
+  font-size: 36px; font-weight: 700; text-transform: uppercase; letter-spacing: -.01em; line-height: .96;
+}
+.tpl-mono-grid .mg-headline {
+  font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase;
+  letter-spacing: .14em; color: #6b6b6b; margin-top: 9px;
+}
+.tpl-mono-grid .mg-ruler {
+  height: 6px; margin: 16px 0 14px;
+  background-image: repeating-linear-gradient(to right, #0a0a0a 0, #0a0a0a 1px, transparent 1px, transparent 8px);
+}
+.tpl-mono-grid .mg-contacts {
+  font-family: "IBM Plex Mono", monospace; font-size: 10.5px; color: #6b6b6b; letter-spacing: .02em;
+}
+.tpl-mono-grid .mg-sections { margin-top: 18px; }
+.tpl-mono-grid .mg-section {
+  display: grid; grid-template-columns: 34px 1fr; gap: 14px; padding: 16px 0; border-top: 1px solid #e2e2e2;
+}
+.tpl-mono-grid .mg-section:first-child { border-top: 2px solid #0a0a0a; }
+.tpl-mono-grid .mg-index { font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 700; color: #e8432c; padding-top: 2px; }
+.tpl-mono-grid .mg-section-label {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .12em; font-weight: 600; margin-bottom: 10px;
+}
+.tpl-mono-grid .mg-row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; margin-bottom: 10px; }
+.tpl-mono-grid .mg-row:last-child { margin-bottom: 0; }
+.tpl-mono-grid .mg-row-period { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; color: #6b6b6b; }
+.tpl-mono-grid .mg-row-body b { font-weight: 600; }
+.tpl-mono-grid .mg-row-desc { font-size: 12px; opacity: .78; margin-top: 4px; white-space: pre-wrap; }
+.tpl-mono-grid .mg-skill-row { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .01em; }
+.tpl-mono-grid .mg-text { font-size: 13px; line-height: 1.62; }
+.tpl-mono-grid .mg-stat-row { display: flex; gap: 28px; flex-wrap: wrap; }
+.tpl-mono-grid .mg-stat-value { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 23px; color: #e8432c; line-height: 1; }
+.tpl-mono-grid .mg-stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: #6b6b6b; margin-top: 5px; }
+
+/* ---------- Свободный холст: перетаскиваемые и изменяемые по размеру блоки ---------- */
+
+.resume-canvas-page {
+  position: relative;
+  background: #ffffff;
+  color: #1a1f27;
+  font-family: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.canvas-block {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 4px 6px;
+}
+.canvas-block-content { width: 100%; height: 100%; overflow: hidden; }
+.canvas-block.editable {
+  cursor: grab;
+  border: 1.5px dashed transparent;
+  border-radius: 4px;
+  transition: border-color .1s;
+}
+.canvas-block.editable:hover { border-color: rgba(45,212,191,.55); }
+.canvas-block.editable.dragging { cursor: grabbing; border-color: #2dd4bf; z-index: 40; box-shadow: 0 10px 28px rgba(0,0,0,.22); }
+.canvas-block-label {
+  position: absolute; top: -20px; left: 0;
+  font-family: "IBM Plex Mono", monospace; font-size: 10px; font-weight: 600;
+  color: #04120f; background: #2dd4bf; padding: 2px 7px; border-radius: 4px;
+  opacity: 0; pointer-events: none; transition: opacity .1s; white-space: nowrap;
+}
+.canvas-block.editable:hover .canvas-block-label,
+.canvas-block.editable.dragging .canvas-block-label { opacity: 1; }
+.canvas-resize-handle {
+  position: absolute; right: 0; bottom: 0; width: 14px; height: 14px;
+  background: #2dd4bf; border-radius: 4px 0 4px 0; cursor: nwse-resize;
+  opacity: 0; transition: opacity .1s;
+}
+.canvas-block.editable:hover .canvas-resize-handle,
+.canvas-block.editable.dragging .canvas-resize-handle { opacity: 1; }
+
+.canvas-image-block { padding: 0; }
+.canvas-image-el { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.canvas-image-block.is-shape .canvas-image-el { object-fit: contain; }
+.canvas-image-remove {
+  position: absolute; top: -10px; right: -10px; width: 22px; height: 22px;
+  border-radius: 50%; background: #f87171; color: #fff; border: 2px solid #fff;
+  font-size: 11px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .1s; z-index: 5;
+}
+.canvas-image-block.editable:hover .canvas-image-remove,
+.canvas-image-block.editable.dragging .canvas-image-remove { opacity: 1; }
+.canvas-shape-recolor {
+  position: absolute; top: -10px; left: -10px; width: 22px; height: 22px;
+  padding: 0; border: 2px solid #fff; border-radius: 50%; cursor: pointer;
+  opacity: 0; transition: opacity .1s; z-index: 5; overflow: hidden;
+}
+.canvas-shape-recolor::-webkit-color-swatch-wrapper { padding: 0; }
+.canvas-shape-recolor::-webkit-color-swatch { border: none; border-radius: 50%; }
+.canvas-image-block.editable:hover .canvas-shape-recolor,
+.canvas-image-block.editable.dragging .canvas-shape-recolor { opacity: 1; }
+
+.canvas-snap-guide { position: absolute; background: #2dd4bf; z-index: 60; pointer-events: none; display: none; }
+.canvas-snap-guide.vertical { top: 0; bottom: 0; width: 1px; }
+.canvas-snap-guide.horizontal { left: 0; right: 0; height: 1px; }
+
+/* ---- Визуальные эффекты холста (необязательные, выбираются в конструкторе) ---- */
+.resume-canvas-page.fx-shadow .canvas-block-content { box-shadow: 0 6px 18px rgba(0,0,0,.14); border-radius: 8px; background: #fff; }
+.resume-canvas-page.fx-border .canvas-block-content { border-left: 3px solid #2dd4bf; padding-left: 10px; }
+.resume-canvas-page.fx-rounded .canvas-block-content { border-radius: 16px; }
+.resume-canvas-page.fx-rounded .canvas-image-el { border-radius: 16px; }
+
+/* ============================================================
+   Галерея шаблонов: 11 структур × 46 тем (см. TEMPLATE_STRUCTURES /
+   TEMPLATE_THEMES в resume-render.js). Структура задаёт вёрстку и графику,
+   тема — палитру через --tpl-primary / --tpl-primary-2 / --tpl-ink,
+   подставляемые инлайн при рендере конкретной комбинации.
+   ============================================================ */
+
+.resume-page[class*="struct-"] { --tpl-primary:#0369A1; --tpl-primary-2:#0EA5E9; --tpl-ink:#fff; }
+.resume-page[class*="struct-"] .resume-name { font-size: 25px; font-weight: 700; color: #171a20; }
+.resume-page[class*="struct-"] .resume-headline { font-size: 13.5px; font-weight: 600; margin-top: 4px; color: var(--tpl-primary); }
+.resume-page[class*="struct-"] .resume-contacts { font-size: 11.5px; opacity: .65; margin-top: 8px; font-family: "IBM Plex Mono", monospace; }
+.resume-page[class*="struct-"] .resume-section-title { color: var(--tpl-primary); border-bottom: 1.5px solid var(--tpl-primary); padding-bottom: 4px; display: inline-block; }
+.resume-page[class*="struct-"] .resume-skill-chip { background: color-mix(in srgb, var(--tpl-primary) 12%, white); color: var(--tpl-primary); font-weight: 600; }
+.resume-page[class*="struct-"] .resume-achievement-value { color: var(--tpl-primary); }
+.resume-page[class*="struct-"] .resume-achievement-card { background: color-mix(in srgb, var(--tpl-primary) 6%, white); border-color: color-mix(in srgb, var(--tpl-primary) 20%, white); }
+
+/* ---- Классика: по центру, тонкая линия под именем в цвете темы ---- */
+.resume-page.struct-classic-single .resume-header { text-align: center; border-bottom: 2px solid var(--tpl-primary); padding-bottom: 14px; margin-bottom: 18px; }
+.resume-page.struct-classic-single .resume-name { font-size: 27px; }
+
+/* ---- Сайдбар слева: градиентная колонка с декоративным пятном ---- */
+.resume-page.struct-sidebar-left { padding: 0; display: grid; grid-template-columns: 68mm 1fr; }
+.resume-page.struct-sidebar-left .resume-sidebar {
+  background: linear-gradient(160deg, var(--tpl-primary), var(--tpl-primary-2));
+  color: var(--tpl-ink); padding: 16mm 10mm; display: flex; flex-direction: column; gap: 18px;
+  position: relative; overflow: hidden;
+}
+.resume-page.struct-sidebar-left .resume-sidebar::after {
+  content: ""; position: absolute; width: 160px; height: 160px; border-radius: 50%;
+  background: rgba(255,255,255,.08); bottom: -60px; right: -60px;
+}
+.resume-page.struct-sidebar-left .resume-main { padding: 16mm 14mm; }
+.resume-page.struct-sidebar-left .resume-sidebar .resume-name,
+.resume-page.struct-sidebar-left .resume-sidebar .resume-headline,
+.resume-page.struct-sidebar-left .resume-sidebar .resume-contacts { color: var(--tpl-ink); position: relative; }
+.resume-page.struct-sidebar-left .resume-sidebar .resume-headline { opacity: .92; }
+.resume-page.struct-sidebar-left .resume-sidebar .resume-section-title { color: var(--tpl-ink); border-bottom-color: rgba(255,255,255,.4); position: relative; }
+.resume-page.struct-sidebar-left .resume-sidebar .resume-skill-chip { background: rgba(255,255,255,.16); color: var(--tpl-ink); }
+.resume-page.struct-sidebar-left .resume-main .resume-section-title { border-bottom: none; border-left: 3px solid var(--tpl-primary); padding-left: 8px; }
+
+/* ---- Сайдбар справа: цветная шапка-полоса + два столбца ---- */
+.resume-page.struct-sidebar-right { padding: 0; }
+.resume-page.struct-sidebar-right .struct-band { background: linear-gradient(120deg, var(--tpl-primary), var(--tpl-primary-2)); color: var(--tpl-ink); padding: 16mm 16mm 14px; }
+.resume-page.struct-sidebar-right .struct-band .resume-name,
+.resume-page.struct-sidebar-right .struct-band .resume-headline,
+.resume-page.struct-sidebar-right .struct-band .resume-contacts { color: var(--tpl-ink); }
+.resume-page.struct-sidebar-right .struct-band .resume-headline { opacity: .92; }
+.resume-page.struct-sidebar-right .struct-body { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; padding: 16px 16mm 16mm; }
+.resume-page.struct-sidebar-right .resume-sidebar-right { display: flex; flex-direction: column; gap: 16px; border-left: 1px solid #e4e7ec; padding-left: 18px; }
+
+/* ---- Цветная шапка: крупный градиентный баннер с точечным паттерном ---- */
+.resume-page.struct-header-band { padding: 0; }
+.resume-page.struct-header-band .struct-band { background: linear-gradient(135deg, var(--tpl-primary), var(--tpl-primary-2)); color: var(--tpl-ink); padding: 20mm 16mm 22px; position: relative; overflow: hidden; }
+.resume-page.struct-header-band .struct-band-deco::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.16) 1.5px, transparent 1.5px);
+  background-size: 16px 16px; opacity: .6;
+}
+.resume-page.struct-header-band .struct-band .resume-name,
+.resume-page.struct-header-band .struct-band .resume-headline,
+.resume-page.struct-header-band .struct-band .resume-contacts { color: var(--tpl-ink); position: relative; }
+.resume-page.struct-header-band .struct-band .resume-name { font-size: 30px; }
+.resume-page.struct-header-band .struct-band .resume-headline { opacity: .92; }
+.resume-page.struct-header-band .struct-content { padding: 18px 16mm 16mm; }
+
+/* ---- Диагональный сплит: скошенная цветная плашка позади шапки ---- */
+.resume-page.struct-diagonal-split { padding: 0; position: relative; overflow: hidden; }
+.resume-page.struct-diagonal-split .struct-diagonal-bg {
+  position: absolute; top: 0; left: 0; right: 0; height: 74mm;
+  background: linear-gradient(135deg, var(--tpl-primary), var(--tpl-primary-2));
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 0 100%);
+}
+.resume-page.struct-diagonal-split .struct-diagonal-head { position: relative; padding: 16mm 16mm 8px; }
+.resume-page.struct-diagonal-split .struct-diagonal-head .resume-name,
+.resume-page.struct-diagonal-split .struct-diagonal-head .resume-headline,
+.resume-page.struct-diagonal-split .struct-diagonal-head .resume-contacts { color: var(--tpl-ink); }
+.resume-page.struct-diagonal-split .struct-diagonal-head .resume-name { font-size: 28px; }
+.resume-page.struct-diagonal-split .struct-content { position: relative; padding: 10px 16mm 16mm; margin-top: 78mm; }
+
+/* ---- Таймлайн: точки и соединительная линия у опыта работы ---- */
+.resume-page.struct-timeline .resume-header { border-bottom: 2px solid var(--tpl-primary); padding-bottom: 14px; margin-bottom: 18px; }
+.resume-page.struct-timeline .struct-timeline .resume-section:last-child .resume-entry { position: relative; padding-left: 20px; margin-bottom: 16px; }
+.resume-page.struct-timeline .struct-timeline .resume-section:last-child .resume-entry::before {
+  content: ""; position: absolute; left: 3px; top: 4px; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--tpl-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--tpl-primary) 18%, white);
+}
+.resume-page.struct-timeline .struct-timeline .resume-section:last-child .resume-entry::after {
+  content: ""; position: absolute; left: 7px; top: 14px; bottom: -16px; width: 1.5px;
+  background: color-mix(in srgb, var(--tpl-primary) 30%, white);
+}
+.resume-page.struct-timeline .struct-timeline .resume-section:last-child .resume-entry:last-child::after { display: none; }
+.resume-page.struct-timeline .resume-section-title { border: none; }
+
+/* ---- Карточки: каждый раздел — отдельная карточка с цветной полосой сверху ---- */
+.resume-page.struct-cards { padding: 0; background: #f7f8fa; }
+.resume-page.struct-cards .resume-header { background: #fff; padding: 14mm 14mm 12px; border-bottom: 3px solid var(--tpl-primary); }
+.resume-page.struct-cards .struct-card-grid { padding: 12px 14mm 14mm; display: flex; flex-direction: column; gap: 12px; }
+.resume-page.struct-cards .struct-card-grid .resume-section {
+  background: #fff; border-radius: 10px; padding: 14px 16px; margin-top: 0;
+  border-top: 3px solid var(--tpl-primary); box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+.resume-page.struct-cards .resume-section-title { border: none; }
+
+/* ---- Навыки под шапкой: полноширинная цветная лента с чипами ---- */
+.resume-page.struct-chip-header .resume-header { border-bottom: 2px solid var(--tpl-primary); padding-bottom: 12px; }
+.resume-page.struct-chip-header .struct-chip-strip { background: color-mix(in srgb, var(--tpl-primary) 8%, white); margin: 14px -16mm 0; padding: 10px 16mm; }
+.resume-page.struct-chip-header .struct-chip-strip .resume-section-title { display: none; }
+.resume-page.struct-chip-header .struct-chip-strip .resume-skill-chip { background: var(--tpl-primary); color: var(--tpl-ink); }
+.resume-page.struct-chip-header .struct-body { display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; margin-top: 16px; }
+.resume-page.struct-chip-header .resume-sidebar-right { border-left: 1px solid #e4e7ec; padding-left: 16px; }
+
+/* ---- Два столбца: разделены вертикальной линией ---- */
+.resume-page.struct-two-col-balance .resume-header { text-align: center; border-bottom: 2px solid var(--tpl-primary); padding-bottom: 12px; margin-bottom: 16px; }
+.resume-page.struct-two-col-balance .struct-balance { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.resume-page.struct-two-col-balance .struct-balance-col:first-child { border-right: 1px solid #e4e7ec; padding-right: 18px; }
+
+/* ---- Инициалы-медальон: круглый градиентный бейдж рядом с именем ---- */
+.resume-page.struct-initial-badge .struct-badge-head { display: flex; align-items: center; gap: 16px; border-bottom: 2px solid var(--tpl-primary); padding-bottom: 14px; margin-bottom: 16px; }
+.resume-page.struct-initial-badge .struct-badge {
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--tpl-primary), var(--tpl-primary-2)); color: var(--tpl-ink);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; font-family: "Sora", sans-serif;
+}
+.resume-page.struct-initial-badge .resume-header { flex: 1; }
+
+/* ---- Плотный ATS: минимум декора, максимум плотности для парсеров ---- */
+.resume-page.struct-dense-ats { font-size: 12px; line-height: 1.42; padding: 12mm 14mm; }
+.resume-page.struct-dense-ats .resume-header { border-bottom: 1.5px solid var(--tpl-primary); padding-bottom: 8px; margin-bottom: 4px; }
+.resume-page.struct-dense-ats .resume-name { font-size: 19px; }
+.resume-page.struct-dense-ats .resume-section { margin-top: 10px; }
+.resume-page.struct-dense-ats .resume-section-title { font-size: 10.5px; border: none; }
+.resume-page.struct-dense-ats .resume-skill-chip { background: none; padding: 0; color: #1a1f27; font-weight: 400; }
+.resume-page.struct-dense-ats .resume-skill-chip:not(:last-child)::after { content: " · "; }
+
+/* ---------- Превью внутри приложения (масштабируем страницу под панель) ---------- */
+
+.resume-preview-frame {
+  background: var(--field-bg, #0f141b);
+  border: 1px solid var(--border-default, #2a3140);
+  border-radius: 12px;
+  padding: 20px;
+  overflow: auto;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: relative;
+}
+.resume-preview-frame > * { margin: 0 auto; }
+.resume-preview-frame .resume-page,
+.resume-preview-frame .resume-canvas-page {
+  flex-shrink: 0;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+  zoom: 0.72;
+}
+
+.preview-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.preview-toolbar .zoom-label {
+  font-family: var(--font-mono, monospace); font-size: 11.5px; color: var(--text-faint, #6b7486);
+  margin-left: 2px;
+}
+
+@media print {
+  body { margin: 0; }
+  .resume-page { box-shadow: none !important; transform: none !important; margin: 0 !important; }
+}

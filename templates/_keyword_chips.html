@@ -1,0 +1,3 @@
+{%- for k in keyword_categories -%}
+<label class="{{ chip_class }}" {% if chip_attr %}{{ chip_attr }}{% endif %}><input type="checkbox" value="{{ k }}"> {{ k }}</label>
+{% endfor %}

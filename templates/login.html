@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Вход — JobPilot</title>
+{% include '_icons.html' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Titillium+Web:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand"><span class="brand-mark">JP</span> JobPilot</div>
+    <div class="auth-panel">
+      <h1>Вход</h1>
+      <p class="sub">Платформа поиска работы для команды.</p>
+      {% if error %}<div class="auth-error" role="alert">{{ error }}</div>{% endif %}
+      <form method="POST" autocomplete="on">
+        <div class="field auth-field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" name="email" value="{{ email or '' }}" required autofocus autocomplete="username" inputmode="email" enterkeyhint="next">
+        </div>
+        <div class="field auth-field">
+          <label for="login-password">Пароль</label>
+          <input type="password" id="login-password" name="password" required autocomplete="current-password" enterkeyhint="done">
+        </div>
+        <button type="submit" class="primary full">Войти</button>
+      </form>
+      <div class="auth-switch">Нет аккаунта? <a href="{{ url_for('register_page') }}">Зарегистрироваться</a></div>
+    </div>
+  </div>
+</body>
+</html>

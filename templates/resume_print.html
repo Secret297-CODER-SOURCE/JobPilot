@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Резюме — печать</title>
+{% include '_icons.html' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Source+Serif+4:ital,wght@0,600;1,500&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@500;700&family=Archivo:wght@600;900&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/resume-templates.css') }}">
+<style>
+  body { margin: 0; background: #d9dce2; }
+  .print-hint {
+    text-align: center; padding: 10px; font-family: "IBM Plex Sans", sans-serif;
+    font-size: 13px; color: #555; background: #eef0f3; border-bottom: 1px solid #ccc;
+  }
+  @media print { .print-hint { display: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+  <div class="print-hint">Откроется диалог печати — выберите «Сохранить как PDF». Если диалог не появился, нажмите Cmd/Ctrl+P.</div>
+  <div id="resume-root"></div>
+  <script src="{{ url_for('static', filename='js/resume-render.js') }}"></script>
+  <script>
+    const data = {{ data_json | safe }};
+    document.getElementById('resume-root').innerHTML = renderResumeHTML(data, {{ template | tojson }});
+    const images = document.images ? Array.from(document.images) : [];
+    const imagesReady = Promise.all(images.map(img => img.complete ? Promise.resolve() : new Promise(res => {
+      img.addEventListener('load', res, { once: true });
+      img.addEventListener('error', res, { once: true });
+    })));
+    Promise.all([document.fonts ? document.fonts.ready : Promise.resolve(), imagesReady]).then(() => {
+      requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+    });
+  </script>
+</body>
+</html>

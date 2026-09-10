@@ -1,0 +1,19 @@
+services:
+  jobpilot:
+    build:
+      context: ..
+      dockerfile: jobscraper/Dockerfile
+    ports:
+      - "5057:5057"
+    volumes:
+      - jobpilot_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5057/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  jobpilot_data:

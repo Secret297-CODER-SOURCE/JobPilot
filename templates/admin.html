@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Админка — JobPilot</title>
+{% include '_icons.html' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=Titillium+Web:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<button type="button" class="nav-toggle" id="nav-toggle" aria-label="Открыть меню" aria-controls="app-sidebar" aria-expanded="false">
+  <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+</button>
+<div class="nav-scrim" id="nav-scrim" hidden></div>
+<div class="app-shell">
+  <aside class="sidebar" id="app-sidebar">
+    <div class="brand"><span class="brand-mark">JP</span> JobPilot</div>
+    <nav class="main-nav">
+      <button type="button" class="nav-item active" data-admin-section="overview">
+        <span class="nav-ch">01</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+        Обзор
+      </button>
+      <button type="button" class="nav-item" data-admin-section="access">
+        <span class="nav-ch">02</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Доступ
+      </button>
+      <button type="button" class="nav-item" data-admin-section="users">
+        <span class="nav-ch">03</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Пользователи
+      </button>
+      <button type="button" class="nav-item" data-admin-section="journal">
+        <span class="nav-ch">04</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+        Журнал
+      </button>
+      <a class="nav-item" href="/">
+        <span class="nav-ch">←</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+        В приложение
+      </a>
+    </nav>
+    <div class="sidebar-footer">Ключи и входы на площадки — только здесь. Пользователи их не видят.</div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">{{ user.name }}</div>
+        <div class="sidebar-user-email">{{ user.email }}</div>
+      </div>
+      <form method="POST" action="/logout">
+        <button type="submit" class="icon-btn-ghost" title="Выйти" aria-label="Выйти">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <main class="content admin-main">
+    <div class="cockpit-topbar">
+      <div class="topbar-item"><span class="topbar-label">Пилот</span><span class="topbar-value">{{ user.name }}</span></div>
+      <div class="topbar-item"><span class="topbar-label">Дата</span><span class="topbar-value" id="cockpit-date">--</span></div>
+      <div class="topbar-item"><span class="topbar-label">Время</span><span class="topbar-value" id="cockpit-clock">--:--:--</span></div>
+    </div>
+    <script>
+      (function tickCockpit() {
+        var now = new Date();
+        var clock = document.getElementById('cockpit-clock');
+        var date = document.getElementById('cockpit-date');
+        if (clock) clock.textContent = now.toLocaleTimeString('ru-RU', { hour12: false });
+        if (date) date.textContent = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        setTimeout(tickCockpit, 1000);
+      })();
+    </script>
+    <section class="admin-section is-active" data-admin-panel="overview">
+      <div class="page-header">
+        <h1>Обзор платформы</h1>
+        <p>Живая картина: кто пользуется JobPilot, сколько поисков и как отвечает ИИ.</p>
+      </div>
+      <div class="admin-stat-row" id="admin-stats"></div>
+      <div class="admin-two">
+        <div class="panel">
+          <div class="section-label">Поиски по дням</div>
+          <div class="admin-bars" id="admin-bars"></div>
+        </div>
+        <div class="panel">
+          <div class="section-label">Топ запросов</div>
+          <div class="admin-kw" id="admin-kw"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:20px;">
+        <div class="section-label">По источникам</div>
+        <table class="admin-table"><thead><tr><th>Источник</th><th>Запросов</th><th>Из кэша</th><th>Вакансий</th></tr></thead><tbody id="admin-sources-body"></tbody></table>
+      </div>
+    </section>
+
+    <section class="admin-section" data-admin-panel="access">
+      <div class="page-header">
+        <h1>Доступ</h1>
+        <p>ИИ, Jooble и кабинеты работодателя. Значения скрыты от обычных аккаунтов.</p>
+      </div>
+      <div class="panel">
+        <div class="section-label">Ключи ИИ и Jooble</div>
+        <div class="hint-inline" style="margin-bottom:14px;">Один набор на всю платформу: оценка резюме, письма, jooble.org.</div>
+        {% for p in [
+          ('anthropic', 'Anthropic (Claude)', 'sk-ant-…', 'claude-haiku-4-5-20251001'),
+          ('openai', 'OpenAI', 'sk-…', 'gpt-4o-mini'),
+          ('gemini', 'Google Gemini', 'AIza…', 'gemini-2.0-flash')
+        ] %}
+        <div class="provider-card">
+          <div class="provider-card-top">
+            <div class="provider-name">{{ p[1] }}</div>
+            <span class="provider-status unset" id="status-{{ p[0] }}">не задан</span>
+          </div>
+          <div class="key-row">
+            <div class="field"><label>API-ключ</label><input type="password" id="key-{{ p[0] }}" placeholder="{{ p[2] }}"></div>
+            <div class="field" style="max-width:220px;"><label>Модель</label><input type="text" id="model-{{ p[0] }}" placeholder="{{ p[3] }}"></div>
+            <button type="button" class="small-primary" id="save-{{ p[0] }}">Сохранить</button>
+            <button type="button" class="danger-ghost" id="clear-{{ p[0] }}">Удалить</button>
+          </div>
+        </div>
+        {% endfor %}
+        <div class="field" style="margin:10px 0 16px;">
+          <label>Активный провайдер</label>
+          <div class="radio-row">
+            <label><input type="radio" name="active-provider" value="anthropic"> Anthropic</label>
+            <label><input type="radio" name="active-provider" value="openai"> OpenAI</label>
+            <label><input type="radio" name="active-provider" value="gemini"> Gemini</label>
+          </div>
+        </div>
+        <div class="provider-card">
+          <div class="provider-card-top">
+            <div class="provider-name">Jooble</div>
+            <span class="provider-status unset" id="status-jooble">не задан</span>
+          </div>
+          <div class="key-row">
+            <div class="field"><label>API-ключ</label><input type="password" id="key-jooble" placeholder="ключ из jooble.org/api/about"></div>
+            <button type="button" class="small-primary" id="save-jooble">Сохранить</button>
+            <button type="button" class="danger-ghost" id="clear-jooble">Удалить</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:20px;">
+        <div class="section-label">Вход на площадки — рынок кандидатов</div>
+        <div class="hint-inline" style="margin-bottom:14px;">Нужны, чтобы открыть ленты резюме. Собираем только публичные карточки — без имён и контактов. Логин и пароль общие с личным кабинетом — задаются один раз в аккаунте, на вкладке «Моё резюме с площадок», и используются везде.</div>
+        {% for b in [
+          ('djinni', 'djinni.co'),
+          ('workua', 'work.ua'),
+          ('rabota', 'robota.ua')
+        ] %}
+        <div class="provider-card">
+          <div class="provider-card-top">
+            <div class="provider-name">{{ b[1] }}</div>
+            <span class="provider-status unset" id="status-{{ b[0] }}-note">берётся из «Моё резюме»</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="admin-section" data-admin-panel="users">
+      <div class="page-header">
+        <h1>Пользователи</h1>
+        <p>Кто зарегистрирован на платформе.</p>
+      </div>
+      <div class="panel">
+        <table class="admin-table" id="admin-users-table">
+          <thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Регистрация</th></tr></thead>
+          <tbody id="admin-users-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-section" data-admin-panel="journal">
+      <div class="page-header">
+        <h1>Журнал</h1>
+        <p>Входы, поиски, ИИ и изменения ключей за последние дни.</p>
+      </div>
+      <div class="panel">
+        <div class="log-toolbar">
+          <label class="hint-inline" style="margin:0;">Фильтр
+            <select id="admin-log-filter">
+              <option value="">Все события</option>
+              <option value="auth.login">Входы</option>
+              <option value="auth.register">Регистрации</option>
+              <option value="search.jobs">Поиск вакансий</option>
+              <option value="search.candidates">Рынок кандидатов</option>
+              <option value="resume.import">Импорт резюме</option>
+              <option value="ai.match">ИИ: оценка</option>
+              <option value="ai.improve">ИИ: текст</option>
+              <option value="ai.cover">ИИ: письмо</option>
+              <option value="ai.build">ИИ: резюме</option>
+              <option value="keys.save">Ключи: сохранение</option>
+              <option value="keys.delete">Ключи: удаление</option>
+            </select>
+          </label>
+          <span class="hint-inline" id="admin-log-count"></span>
+        </div>
+        <table class="admin-table">
+          <thead><tr><th>Когда</th><th>Кто</th><th>Действие</th><th>Детали</th></tr></thead>
+          <tbody id="admin-activity-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+<nav class="mobile-tabbar" aria-label="Разделы админки">
+  <button type="button" class="mobile-tab active" data-admin-section="overview">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+    Обзор
+  </button>
+  <button type="button" class="mobile-tab" data-admin-section="access">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Доступ
+  </button>
+  <button type="button" class="mobile-tab" data-admin-section="users">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Люди
+  </button>
+  <button type="button" class="mobile-tab" data-admin-section="journal">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+    Журнал
+  </button>
+  <a class="mobile-tab" href="/">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+    Приложение
+  </a>
+</nav>
+<div class="toast" id="toast"></div>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

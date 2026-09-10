@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Добро пожаловать — JobPilot</title>
+{% include '_icons.html' %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Titillium+Web:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="onb-page">
+  <div class="onb-shell">
+    <div class="onb-brand"><span class="brand-mark">JP</span> JobPilot</div>
+
+    <div class="ai-wizard">
+      <div class="ai-wizard-steps" id="onb-steps">
+        <div class="ai-step active" data-step="profile"><div class="ai-step-num">1</div><div class="ai-step-label">О вас</div></div>
+        <div class="ai-step-line" data-line="1"></div>
+        <div class="ai-step" data-step="prefs"><div class="ai-step-num">2</div><div class="ai-step-label">Поиск работы</div></div>
+        <div class="ai-step-line" data-line="2"></div>
+        <div class="ai-step" data-step="exp"><div class="ai-step-num">3</div><div class="ai-step-label">Опыт и учёба</div></div>
+        <div class="ai-step-line" data-line="3"></div>
+        <div class="ai-step" data-step="done"><div class="ai-step-num">4</div><div class="ai-step-label">Готово</div></div>
+      </div>
+
+      <div class="ai-stage active" data-stage="profile">
+        <div class="panel ai-build-panel">
+          <div class="ai-build-title">Расскажите немного о себе</div>
+          <div class="hint-inline">Это заполнит ваш профиль и подставится в резюме — в любой момент можно поменять в «Настройках».</div>
+          <div class="onb-row-2" style="margin-top:14px;">
+            <div class="onb-field"><label for="onb-first-name">Имя</label><input type="text" id="onb-first-name" placeholder="Иван" autocomplete="given-name" enterkeyhint="next"></div>
+            <div class="onb-field"><label for="onb-last-name">Фамилия</label><input type="text" id="onb-last-name" placeholder="Іванов" autocomplete="family-name" enterkeyhint="next"></div>
+          </div>
+          <div class="onb-row-2">
+            <div class="onb-field"><label for="onb-phone">Телефон</label><input type="tel" id="onb-phone" placeholder="+380 ..." autocomplete="tel" inputmode="tel" enterkeyhint="next"></div>
+            <div class="onb-field"><label for="onb-location">Город</label><input type="text" id="onb-location" placeholder="Київ" autocomplete="address-level2" enterkeyhint="next"></div>
+          </div>
+          <div class="onb-field"><label>Желаемая должность</label><input type="text" id="onb-headline" placeholder="Python Developer"></div>
+          <div class="actions" style="margin-top:10px;">
+            <button type="button" class="primary" id="onb-next-1">Далее →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-stage" data-stage="prefs">
+        <div class="panel ai-build-panel">
+          <div class="ai-build-title">Какую работу вы ищете</div>
+          <div class="hint-inline">Подставится по умолчанию в поиск вакансий — не придётся вводить заново каждый раз. Можно изменить в любой момент в «Настройках».</div>
+          <div class="onb-field" style="margin-top:14px;">
+            <label>Категория</label>
+            <div class="onb-chips" id="onb-keyword-chips">
+              {% set chip_class = 'onb-chip' %}
+              {% set chip_attr = '' %}
+              {% include '_keyword_chips.html' %}
+            </div>
+            <input type="text" id="onb-keyword-extra" placeholder="Другая категория — через запятую" style="margin-top:8px;">
+            <div class="hint-inline">Можно выбрать несколько. Сохранятся все и подставятся в поиск.</div>
+          </div>
+          <div class="onb-field"><label>Свободный текст запроса</label><input type="text" id="onb-query" placeholder="data engineer"></div>
+          <div class="onb-field">
+            <label>Регионы</label>
+            <div class="onb-chips" id="onb-region-chips">
+              <label class="onb-chip"><input type="checkbox" value="Київ"> Київ</label>
+              <label class="onb-chip"><input type="checkbox" value="Львів"> Львів</label>
+              <label class="onb-chip"><input type="checkbox" value="Дніпро"> Дніпро</label>
+              <label class="onb-chip"><input type="checkbox" value="Харків"> Харків</label>
+              <label class="onb-chip"><input type="checkbox" value="Одеса"> Одеса</label>
+              <label class="onb-chip"><input type="checkbox" value="Вінниця"> Вінниця</label>
+              <label class="onb-chip"><input type="checkbox" value="Запоріжжя"> Запоріжжя</label>
+            </div>
+            <input type="text" id="onb-region-extra" placeholder="Другой город — через запятую" style="margin-top:8px;">
+          </div>
+          <div class="onb-field">
+            <label>Источники вакансий</label>
+            <div class="onb-chips" id="onb-source-chips">
+              <label class="onb-chip"><input type="checkbox" value="djinni" checked> djinni.co</label>
+              <label class="onb-chip"><input type="checkbox" value="workua" checked> work.ua</label>
+              <label class="onb-chip"><input type="checkbox" value="rabotaua" checked> robota.ua</label>
+              <label class="onb-chip"><input type="checkbox" value="jooble"> jooble.org</label>
+            </div>
+          </div>
+          <div class="onb-row-2">
+            <div class="onb-field">
+              <label>Удалёнка</label>
+              <select id="onb-remote">
+                <option value="">Не важно</option>
+                <option value="remote">Только удалёнка</option>
+                <option value="include">Удалёнка + города</option>
+              </select>
+            </div>
+            <div class="onb-field">
+              <label>Бронювання</label>
+              <label class="onb-chip"><input type="checkbox" id="onb-reservation"> Только с бронюванням</label>
+            </div>
+          </div>
+          <div class="onb-row-2">
+            <div class="onb-field">
+              <label>Занятость</label>
+              <select id="onb-employment">
+                <option value="">Не важно</option>
+                <option value="full-time">Полная</option>
+                <option value="part-time">Частичная</option>
+                <option value="contract">Проектная</option>
+                <option value="internship">Стажировка</option>
+              </select>
+            </div>
+          </div>
+          <div class="onb-field"><label>Ожидаемая зарплата</label><input type="text" id="onb-salary" placeholder="$2000-3000"></div>
+          <div class="actions" style="margin-top:10px;">
+            <button type="button" class="ghost" id="onb-back-2">← Назад</button>
+            <button type="button" class="primary" id="onb-next-2">Далее →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-stage" data-stage="exp">
+        <div class="panel ai-build-panel">
+          <div class="ai-build-title">Коротко: опыт и образование</div>
+          <div class="hint-inline">Необязательно — если заполните, мы сразу соберём из этого черновик резюме в разделе «Резюме». Можно пропустить и заполнить позже.</div>
+          <div class="onb-row-2" style="margin-top:14px;">
+            <div class="onb-field"><label>Последняя должность</label><input type="text" id="onb-exp-position" placeholder="Frontend Developer"></div>
+            <div class="onb-field"><label>Компания</label><input type="text" id="onb-exp-company" placeholder="ТОВ Технології"></div>
+          </div>
+          <div class="onb-field"><label>Период</label><input type="text" id="onb-exp-period" placeholder="2022 — н.в."></div>
+          <div class="onb-row-2">
+            <div class="onb-field"><label>Специальность / степень</label><input type="text" id="onb-edu-degree" placeholder="Комп'ютерні науки"></div>
+            <div class="onb-field"><label>Учебное заведение</label><input type="text" id="onb-edu-school" placeholder="КПІ"></div>
+          </div>
+          <div class="onb-field"><label>Период учёбы</label><input type="text" id="onb-edu-period" placeholder="2016 — 2020"></div>
+          <div class="actions" style="margin-top:10px;">
+            <button type="button" class="ghost" id="onb-back-3">← Назад</button>
+            <button type="button" class="primary" id="onb-finish">Готово ✓</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-stage" data-stage="done">
+        <div class="panel ai-done-panel">
+          <div class="ai-done-check">✓</div>
+          <div class="ai-build-title">Всё готово</div>
+          <div class="hint-inline">Открываем JobPilot — профиль и предпочтения поиска уже настроены.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="onb-skip"><button type="button" id="onb-skip-all">Пропустить и перейти в приложение</button></div>
+  </div>
+
+<script>
+const ONB_ORDER = ['profile', 'prefs', 'exp', 'done'];
+function setStage(stage) {
+  document.querySelectorAll('.ai-stage').forEach(s => s.classList.toggle('active', s.dataset.stage === stage));
+  const idx = ONB_ORDER.indexOf(stage);
+  document.querySelectorAll('#onb-steps .ai-step').forEach(el => {
+    const i = ONB_ORDER.indexOf(el.dataset.step);
+    el.classList.toggle('active', i === idx);
+    el.classList.toggle('done', i < idx);
+  });
+  document.querySelectorAll('#onb-steps .ai-step-line').forEach(el => {
+    const i = Number(el.dataset.line);
+    el.classList.toggle('done', i <= idx);
+  });
+}
+
+document.getElementById('onb-next-1').addEventListener('click', () => setStage('prefs'));
+document.getElementById('onb-back-2').addEventListener('click', () => setStage('profile'));
+document.getElementById('onb-next-2').addEventListener('click', () => setStage('exp'));
+document.getElementById('onb-back-3').addEventListener('click', () => setStage('prefs'));
+
+async function finishOnboarding() {
+  const sources = Array.from(document.querySelectorAll('#onb-source-chips input:checked')).map(i => i.value);
+  const chipRegions = Array.from(document.querySelectorAll('#onb-region-chips input:checked')).map(i => i.value);
+  const extraRegions = document.getElementById('onb-region-extra').value.split(/[,;|/]+/).map(s => s.trim()).filter(Boolean);
+  const regionSeen = new Set();
+  const regions = [];
+  for (const name of [...chipRegions, ...extraRegions]) {
+    const key = name.toLowerCase();
+    if (regionSeen.has(key)) continue;
+    regionSeen.add(key);
+    regions.push(name);
+  }
+  const chipKw = Array.from(document.querySelectorAll('#onb-keyword-chips input:checked')).map(i => i.value);
+  const extraKw = document.getElementById('onb-keyword-extra').value.split(/[,;|/]+/).map(s => s.trim()).filter(Boolean);
+  const kwSeen = new Set();
+  const keywords = [];
+  for (const name of [...chipKw, ...extraKw]) {
+    const key = name.toLowerCase();
+    if (kwSeen.has(key)) continue;
+    kwSeen.add(key);
+    keywords.push(name);
+  }
+  const payload = {
+    profile: {
+      first_name: document.getElementById('onb-first-name').value,
+      last_name: document.getElementById('onb-last-name').value,
+      phone: document.getElementById('onb-phone').value,
+      location: document.getElementById('onb-location').value,
+      headline: document.getElementById('onb-headline').value,
+    },
+    search_prefs: {
+      keyword: keywords.join(', '),
+      query: document.getElementById('onb-query').value,
+      region: regions.join(', '),
+      sources,
+      remote: document.getElementById('onb-remote').value,
+      reservation: document.getElementById('onb-reservation').checked,
+      employment_type: document.getElementById('onb-employment').value,
+      salary_expectation: document.getElementById('onb-salary').value,
+    },
+    experience: {
+      position: document.getElementById('onb-exp-position').value,
+      company: document.getElementById('onb-exp-company').value,
+      period: document.getElementById('onb-exp-period').value,
+    },
+    education: {
+      degree: document.getElementById('onb-edu-degree').value,
+      school: document.getElementById('onb-edu-school').value,
+      period: document.getElementById('onb-edu-period').value,
+    },
+  };
+  try {
+    await fetch('/api/onboarding/complete', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
+  } catch (e) { /* всё равно продолжаем в приложение */ }
+  setStage('done');
+  setTimeout(() => { window.location.href = '/'; }, 900);
+}
+
+document.getElementById('onb-finish').addEventListener('click', finishOnboarding);
+
+document.getElementById('onb-skip-all').addEventListener('click', async () => {
+  try { await fetch('/api/onboarding/skip', { method: 'POST' }); } catch (e) {}
+  window.location.href = '/';
+});
+</script>
+</body>
+</html>

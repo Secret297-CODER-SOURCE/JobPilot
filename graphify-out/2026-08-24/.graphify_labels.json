@@ -1,0 +1,21 @@
+{
+  "0": "webapp.py",
+  "1": "payloadFromMarketForm",
+  "2": "app.js",
+  "3": "job_scraper.py",
+  "4": "ai_match.py",
+  "5": "FakeWorkuaPage",
+  "6": "fetch",
+  "7": "startCanvasDrag",
+  "8": "resume-render.js",
+  "9": "renderResumePreview",
+  "10": "applySearchPrefsToForm",
+  "11": "escapeHtml",
+  "12": "cv_extract.py",
+  "13": "submitAiBuild",
+  "14": "CLAUDE.md",
+  "15": "test_candidates.py",
+  "16": "AutoSearchTests",
+  "17": "db.py",
+  "18": "candidate_scraper.py"
+}
